@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     triangle.cpp \
-    inputmanager.cpp
+    inputmanager.cpp \
+    cdtmanager.cpp
 
 HEADERS  += mainwindow.h \
     triangle.h \
-    inputmanager.h
+    inputmanager.h \
+    cdtmanager.h
 
 DEFINES += ANSI_DECLARATORS \
     TRILIBRARY

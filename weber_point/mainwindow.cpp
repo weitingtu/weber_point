@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "inputmanager.h"
+#include "cdtmanager.h"
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsTextItem>
@@ -11,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     _file_menu(nullptr),
     _initialize_act(nullptr),
     _hexagonal_act(nullptr),
+    _cdt_act(nullptr),
     _accumulation_act(nullptr),
     _decompose_act(nullptr),
     _scene(new QGraphicsScene(this)),
@@ -43,6 +45,9 @@ void MainWindow::_create_actions()
     _hexagonal_act    = new QAction(tr("&Hexagonal"), this);
     _hexagonal_act->setCheckable(true);
     connect(_hexagonal_act, SIGNAL(toggled(bool)), this, SLOT(_hexagonal()));
+    _cdt_act    = new QAction(tr("&CDT"), this);
+    _cdt_act->setCheckable(true);
+    connect(_cdt_act, SIGNAL(toggled(bool)), this, SLOT(_cdt()));
     _accumulation_act = new QAction(tr("&Accumulation"), this);
     _decompose_act    = new QAction(tr("&Decompose"), this);
 }
@@ -52,6 +57,7 @@ void MainWindow::_create_menus()
     _file_menu = menuBar()->addMenu(tr("File"));
     _file_menu->addAction(_initialize_act);
     _file_menu->addAction(_hexagonal_act);
+    _file_menu->addAction(_cdt_act);
     _file_menu->addAction(_accumulation_act);
     _file_menu->addAction(_decompose_act);
 }
@@ -96,8 +102,13 @@ void MainWindow::_hexagonal()
     _scene->clear();
     _initialize();
 
+    get_cdt_manager().clear();
+    get_cdt_manager().add_holes(get_input_manager().get_sources());
+    get_cdt_manager().add_holes(get_input_manager().get_obstacles());
+
     for(int i = 0; i < x_ratio + 1; ++i)
     {
+        QVector<QPointF> points;
         for(int j = 0; j < 2 * y_ratio + 1; ++j)
         {
             double shift = 0;
@@ -117,6 +128,19 @@ void MainWindow::_hexagonal()
                 continue;
             }
             _scene->addEllipse(x - rad, y - rad, rad * 2, rad * 2);
+            points.push_back(QPointF(x, y));
         }
+        get_cdt_manager().add_hex_points(points);
+    }
+}
+
+void MainWindow::_cdt()
+{
+    get_cdt_manager().cdt();
+
+    const QVector<QLineF>& lines = get_cdt_manager().get_lines();
+    for(int i = 0; i < lines.size(); ++i)
+    {
+        _scene->addLine(lines[i]);
     }
 }

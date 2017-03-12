@@ -22,6 +22,7 @@ public:
 private slots:
     void _initialize();
     void _hexagonal();
+    void _cdt();
 
 private:
     void _create_actions();
@@ -30,6 +31,7 @@ private:
     QMenu*          _file_menu;
     QAction*        _initialize_act;
     QAction*        _hexagonal_act;
+    QAction*        _cdt_act;
     QAction*        _accumulation_act;
     QAction*        _decompose_act;
     QGraphicsScene* _scene;
