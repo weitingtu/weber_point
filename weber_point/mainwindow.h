@@ -21,6 +21,7 @@ public:
 
 private slots:
     void _initialize();
+    void _hexagonal();
 
 private:
     void _create_actions();

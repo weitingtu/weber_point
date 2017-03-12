@@ -16,16 +16,19 @@ public:
     }
     explicit InputManager(QObject *parent = 0);
 
-    int get_width() const { return _width; }
-    int get_height() const { return _height; }
+    void set_width(double width) { _width = width; }
+    void set_height(double height) { _height = height; }
+    double get_width() const { return _width; }
+    double get_height() const { return _height; }
     const QVector<QPolygonF>& get_sources() const { return _sources; }
     const QVector<QPolygonF>& get_obstacles() const { return _obstacles; }
+    bool is_blocked(const QPointF& point) const;
 signals:
 
 public slots:
 private:
-    int _width;
-    int _height;
+    double _width;
+    double _height;
     QVector<QPolygonF> _sources;
     QVector<QPolygonF> _obstacles;
 };

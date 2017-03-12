@@ -41,6 +41,8 @@ void MainWindow::_create_actions()
     _initialize_act->setCheckable(true);
     connect(_initialize_act, SIGNAL(toggled(bool)), this, SLOT(_initialize()));
     _hexagonal_act    = new QAction(tr("&Hexagonal"), this);
+    _hexagonal_act->setCheckable(true);
+    connect(_hexagonal_act, SIGNAL(toggled(bool)), this, SLOT(_hexagonal()));
     _accumulation_act = new QAction(tr("&Accumulation"), this);
     _decompose_act    = new QAction(tr("&Decompose"), this);
 }
@@ -57,10 +59,10 @@ void MainWindow::_create_menus()
 void MainWindow::_initialize()
 {
     // boundary
-    int width  = get_input_manager().get_width();
-    int height = get_input_manager().get_height();
-    int w = width * 0.1;
-    int h = height * 0.1;
+    double width  = get_input_manager().get_width();
+    double height = get_input_manager().get_height();
+    double w = width * 0.1;
+    double h = height * 0.1;
     _scene->setSceneRect(0 - w, 0 - h, width + 2 * w, height + 2 * h);
 
     _scene->addRect(0, 0, width, height);
@@ -77,4 +79,44 @@ void MainWindow::_initialize()
     }
     _view->fitInView(_scene->sceneRect(), Qt::KeepAspectRatio);
     _view->centerOn(_scene->sceneRect().center());
+}
+
+void MainWindow::_hexagonal()
+{
+    double a = 40;
+    double h = a * std::sqrt(3);
+    double width  = get_input_manager().get_width();
+    double height = get_input_manager().get_height();
+    int x_ratio  = (width  + a + 1 ) / a;
+    int y_ratio  = (height + h + 1 ) / h;
+
+    get_input_manager().set_width(x_ratio * a);
+    get_input_manager().set_height(y_ratio * h);
+
+    _scene->clear();
+    _initialize();
+
+    for(int i = 0; i < x_ratio + 1; ++i)
+    {
+        for(int j = 0; j < 2 * y_ratio + 1; ++j)
+        {
+            double shift = 0;
+            if(j % 2 == 1)
+            {
+                if(i == x_ratio)
+                {
+                    continue;
+                }
+                shift = a / 2;
+            }
+            double rad = 1;
+            double x = i * a + shift;
+            double y = j * h / 2;
+            if(get_input_manager().is_blocked(QPointF(x, y)))
+            {
+                continue;
+            }
+            _scene->addEllipse(x - rad, y - rad, rad * 2, rad * 2);
+        }
+    }
 }
