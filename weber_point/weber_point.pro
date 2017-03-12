@@ -13,6 +13,13 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    triangle.cpp \
+    inputmanager.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    triangle.h \
+    inputmanager.h
+
+DEFINES += ANSI_DECLARATORS \
+    TRILIBRARY
