@@ -2,7 +2,8 @@
 
 CDTManager::CDTManager(QObject *parent) : QObject(parent),
     _holes(),
-    _hex_points()
+    _hex_points(),
+    _lines()
 {
 }
 
@@ -19,7 +20,7 @@ void CDTManager::cdt()
     char options[] = "pczAen";
     triangulate(options, &in, &mid, (struct triangulateio *) NULL );
 
-    _set_segments(mid);
+    _set_lines(mid);
 
     free(in.pointlist);
     free(mid.pointlist);
@@ -107,7 +108,7 @@ struct triangulateio CDTManager::_create_mid() const
     return mid;
 }
 
-void CDTManager::_set_segments(const triangulateio& io)
+void CDTManager::_set_lines(const triangulateio& io)
 {
     _lines.clear();
     for (int i = 0; i < io.numberoftriangles; ++i) {

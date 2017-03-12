@@ -40,7 +40,7 @@ private:
     void _set_points(REAL* pointlist) const;
     struct triangulateio _create_input() const;
     struct triangulateio _create_mid() const;
-    void _set_segments(const triangulateio& io);
+    void _set_lines(const triangulateio& io);
 
     QVector<QPolygonF>         _holes;
     QVector<QVector<QPointF> > _hex_points;
