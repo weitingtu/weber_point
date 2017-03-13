@@ -20,7 +20,7 @@ void CDTManager::cdt()
     char options[] = "pczAen";
     triangulate(options, &in, &mid, (struct triangulateio *) NULL );
 
-    _set_lines(mid);
+    _set_lines_by_edges(mid);
 
     free(in.pointlist);
     free(mid.pointlist);
@@ -90,32 +90,39 @@ struct triangulateio CDTManager::_create_input() const
 struct triangulateio CDTManager::_create_mid() const
 {
     struct triangulateio mid;
-    mid.pointlist = (REAL *) NULL;            /* Not needed if -N switch used. */
-    /* Not needed if -N switch used or number of point attributes is zero: */
-    mid.pointattributelist = (REAL *) NULL;
-    mid.pointmarkerlist = (int *) NULL; /* Not needed if -N or -B switch used. */
-    mid.trianglelist = (int *) NULL;          /* Not needed if -E switch used. */
-    /* Not needed if -E switch used or number of triangle attributes is zero: */
-    mid.triangleattributelist = (REAL *) NULL;
-    mid.neighborlist = (int *) NULL;         /* Needed only if -n switch used. */
-    /* Needed only if segments are output (-p or -c) and -P not used: */
-    mid.segmentlist = (int *) NULL;
-    /* Needed only if segments are output (-p or -c) and -P and -B not used: */
-    mid.segmentmarkerlist = (int *) NULL;
-    mid.edgelist = (int *) NULL;             /* Needed only if -e switch used. */
-    mid.edgemarkerlist = (int *) NULL;   /* Needed if -e used and -B not used. */
+    mid.pointlist = (REAL *) NULL;             /* Not needed if -N switch used. */
+    mid.pointattributelist = (REAL *) NULL;    /* Not needed if -N switch used or number of point attributes is zero: */
+    mid.pointmarkerlist = (int *) NULL;        /* Not needed if -N or -B switch used. */
+    mid.trianglelist = (int *) NULL;           /* Not needed if -E switch used. */
+    mid.triangleattributelist = (REAL *) NULL; /* Not needed if -E switch used or number of triangle attributes is zero: */
+    mid.neighborlist = (int *) NULL;           /* Needed only if -n switch used. */
+    mid.segmentlist = (int *) NULL;            /* Needed only if segments are output (-p or -c) and -P not used: */
+    mid.segmentmarkerlist = (int *) NULL;      /* Needed only if segments are output (-p or -c) and -P and -B not used: */
+    mid.edgelist = (int *) NULL;               /* Needed only if -e switch used. */
+    mid.edgemarkerlist = (int *) NULL;         /* Needed if -e used and -B not used. */
 
     return mid;
 }
 
-void CDTManager::_set_lines(const triangulateio& io)
+void CDTManager::_set_lines_by_triangles(const triangulateio& io)
 {
     _lines.clear();
     for (int i = 0; i < io.numberoftriangles; ++i) {
-        for (int j = 0; j < io.numberofcorners - 1; ++j) {
-            int idx1 = io.trianglelist[i * io.numberofcorners + j] * 2;
-            int idx2 = io.trianglelist[i * io.numberofcorners + j + 1] * 2;
-            _lines.push_back(QLineF(QPointF(io.pointlist[idx1], io.pointlist[idx1 +1]), QPointF(io.pointlist[idx2], io.pointlist[idx2 + 1])));
-        }
+        int idx1 = io.trianglelist[i * io.numberofcorners] * 2;
+        int idx2 = io.trianglelist[i * io.numberofcorners + 1] * 2;
+        int idx3 = io.trianglelist[i * io.numberofcorners + 2] * 2;
+        _lines.push_back(QLineF(QPointF(io.pointlist[idx1], io.pointlist[idx1 +1]), QPointF(io.pointlist[idx2], io.pointlist[idx2 + 1])));
+        _lines.push_back(QLineF(QPointF(io.pointlist[idx2], io.pointlist[idx2 +1]), QPointF(io.pointlist[idx3], io.pointlist[idx3 + 1])));
+        _lines.push_back(QLineF(QPointF(io.pointlist[idx3], io.pointlist[idx3 +1]), QPointF(io.pointlist[idx1], io.pointlist[idx1 + 1])));
+    }
+}
+
+void CDTManager::_set_lines_by_edges(const triangulateio& io)
+{
+    _lines.clear();
+    for (int i = 0; i < io.numberofedges; i++) {
+        int idx1 = io.edgelist[i * 2] * 2;
+        int idx2 = io.edgelist[i * 2 + 1] * 2;
+        _lines.push_back(QLineF(QPointF(io.pointlist[idx1], io.pointlist[idx1 +1]), QPointF(io.pointlist[idx2], io.pointlist[idx2 + 1])));
     }
 }

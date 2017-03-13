@@ -10,11 +10,15 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
     _file_menu(nullptr),
+    _zoom_menu(nullptr),
     _initialize_act(nullptr),
     _hexagonal_act(nullptr),
     _cdt_act(nullptr),
     _accumulation_act(nullptr),
     _decompose_act(nullptr),
+    _zoom_in_act(nullptr),
+    _zoom_out_act(nullptr),
+    _zoom_fit_act(nullptr),
     _scene(new QGraphicsScene(this)),
     _view(new QGraphicsView(_scene, this))
 {
@@ -50,6 +54,16 @@ void MainWindow::_create_actions()
     connect(_cdt_act, SIGNAL(toggled(bool)), this, SLOT(_cdt()));
     _accumulation_act = new QAction(tr("&Accumulation"), this);
     _decompose_act    = new QAction(tr("&Decompose"), this);
+
+    _zoom_in_act      = new QAction(tr("Zoom in"), this);
+    _zoom_in_act->setShortcut(tr("Z"));
+    connect(_zoom_in_act, SIGNAL(triggered(bool)), this, SLOT(_zoom_in()));
+    _zoom_out_act     = new QAction(tr("Zoom out"), this);
+    _zoom_out_act->setShortcut(tr("Shift+Z"));
+    connect(_zoom_out_act, SIGNAL(triggered(bool)), this, SLOT(_zoom_out()));
+    _zoom_fit_act     = new QAction(tr("Zoom fit"), this);
+    _zoom_fit_act->setShortcut(tr("F"));
+    connect(_zoom_fit_act, SIGNAL(triggered(bool)), this, SLOT(_zoom_fit()));
 }
 
 void MainWindow::_create_menus()
@@ -60,6 +74,10 @@ void MainWindow::_create_menus()
     _file_menu->addAction(_cdt_act);
     _file_menu->addAction(_accumulation_act);
     _file_menu->addAction(_decompose_act);
+    _zoom_menu = menuBar()->addMenu(tr("Zoom"));
+    _zoom_menu->addAction(_zoom_in_act);
+    _zoom_menu->addAction(_zoom_out_act);
+    _zoom_menu->addAction(_zoom_fit_act);
 }
 
 void MainWindow::_initialize()
@@ -83,8 +101,6 @@ void MainWindow::_initialize()
     {
         _scene->addPolygon(obstacles[i], QPen(), QBrush(Qt::black));
     }
-    _view->fitInView(_scene->sceneRect(), Qt::KeepAspectRatio);
-    _view->centerOn(_scene->sceneRect().center());
 }
 
 void MainWindow::_hexagonal()
@@ -143,4 +159,20 @@ void MainWindow::_cdt()
     {
         _scene->addLine(lines[i]);
     }
+}
+
+void MainWindow::_zoom_in()
+{
+    _view->scale(2.0, 2.0);
+}
+
+void MainWindow::_zoom_out()
+{
+    _view->scale(1.0 / 2.0, 1.0 / 2.0);
+}
+
+void MainWindow::_zoom_fit()
+{
+    _view->fitInView(_scene->sceneRect(), Qt::KeepAspectRatio);
+    _view->centerOn(_scene->sceneRect().center());
 }

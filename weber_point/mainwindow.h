@@ -23,17 +23,24 @@ private slots:
     void _initialize();
     void _hexagonal();
     void _cdt();
+    void _zoom_in();
+    void _zoom_out();
+    void _zoom_fit();
 
 private:
     void _create_actions();
     void _create_menus();
 
     QMenu*          _file_menu;
+    QMenu*          _zoom_menu;
     QAction*        _initialize_act;
     QAction*        _hexagonal_act;
     QAction*        _cdt_act;
     QAction*        _accumulation_act;
     QAction*        _decompose_act;
+    QAction*        _zoom_in_act;
+    QAction*        _zoom_out_act;
+    QAction*        _zoom_fit_act;
     QGraphicsScene* _scene;
     QGraphicsView*  _view;
 };
