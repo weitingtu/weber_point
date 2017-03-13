@@ -146,7 +146,7 @@ void MainWindow::_hexagonal()
             _scene->addEllipse(x - rad, y - rad, rad * 2, rad * 2);
             points.push_back(QPointF(x, y));
         }
-        get_cdt_manager().add_hex_points(points);
+        get_cdt_manager().add_hexagonals(points);
     }
 }
 

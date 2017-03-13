@@ -2,6 +2,9 @@
 
 CDTManager::CDTManager(QObject *parent) : QObject(parent),
     _holes(),
+    _hexagonals(),
+    _points(),
+    _hole_points(),
     _hex_points(),
     _lines()
 {
@@ -9,10 +12,12 @@ CDTManager::CDTManager(QObject *parent) : QObject(parent),
 
 void CDTManager::cdt()
 {
-    if(_hex_points.empty())
+    if(_hexagonals.empty())
     {
         return;
     }
+
+    _data_to_points();
 
     struct triangulateio in = _create_input();
     struct triangulateio mid = _create_mid();
@@ -36,50 +41,44 @@ void CDTManager::cdt()
     free(mid.edgemarkerlist);
 }
 
-int CDTManager::_get_num_of_points() const
+void CDTManager::_data_to_points()
 {
-    int num_of_points = 0;
-    for(int i = 0; i < _hex_points.size(); ++i)
+    _points.clear();
+    _hex_points.clear();
+    _hex_points.resize(_hexagonals.size());
+    int idx = 0;
+    for(int i = 0; i < _hexagonals.size(); ++i)
     {
-        num_of_points += _hex_points[i].size();
+        _points += _hexagonals[i];
+        for(int j = 0; j < _hexagonals[i].size(); ++j, ++idx)
+        {
+            _hex_points[i].push_back(idx);
+        }
     }
-
+    _hole_points.clear();
+    _hole_points.resize(_holes.size());
     for(int i = 0; i < _holes.size(); ++i)
     {
-        // start point and end point are the same
-        num_of_points += (_holes[i].size() - 1);
-    }
-
-    return num_of_points;
-}
-
-void CDTManager::_set_points(REAL* pointlist) const
-{
-    QVector<QPointF> points;
-    for(int i = 0; i < _hex_points.size(); ++i)
-    {
-        points += _hex_points[i];
-    }
-    for(int i = 0; i < _holes.size(); ++i)
-    {
-        points += _holes[i];
-        points.pop_back();
-    }
-
-    for(int i = 0; i < points.size(); ++i)
-    {
-        pointlist[i * 2]     = points[i].x();
-        pointlist[i * 2 + 1] = points[i].y();
+        _points += _holes[i];
+        _points.pop_back();
+        for(int j = 0; j < _holes[i].size() - 1; ++j, ++idx)
+        {
+            _hole_points[i].push_back(idx);
+        }
     }
 }
 
 struct triangulateio CDTManager::_create_input() const
 {
     struct triangulateio in;
-    in.numberofpoints = _get_num_of_points();
+    in.numberofpoints = _points.size();
     in.numberofpointattributes = 0;
     in.pointlist = (REAL*) malloc(in.numberofpoints * 2 * sizeof(REAL));
-    _set_points(in.pointlist);
+    for(int i = 0; i < _points.size(); ++i)
+    {
+        in.pointlist[i * 2]     = _points[i].x();
+        in.pointlist[i * 2 + 1] = _points[i].y();
+    }
     in.numberofsegments = 0;
     in.numberofholes = 0;
     in.numberofregions = 0;
