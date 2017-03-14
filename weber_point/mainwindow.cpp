@@ -122,23 +122,23 @@ void MainWindow::_hexagonal()
     get_cdt_manager().add_holes(get_input_manager().get_sources());
     get_cdt_manager().add_holes(get_input_manager().get_obstacles());
 
-    for(int i = 0; i < x_ratio + 1; ++i)
+    for(int i = 0; i <  2 * y_ratio + 1; ++i)
     {
         QVector<QPointF> points;
-        for(int j = 0; j < 2 * y_ratio + 1; ++j)
+        for(int j = 0; j < x_ratio + 1; ++j)
         {
             double shift = 0;
-            if(j % 2 == 1)
+            if(i % 2 == 1)
             {
-                if(i == x_ratio)
+                if(j == x_ratio)
                 {
                     continue;
                 }
                 shift = a / 2;
             }
             double rad = 1;
-            double x = i * a + shift;
-            double y = j * h / 2;
+            double x = j * a + shift;
+            double y = i * h / 2;
             if(get_input_manager().is_blocked(QPointF(x, y)))
             {
                 continue;

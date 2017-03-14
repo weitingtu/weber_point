@@ -36,7 +36,9 @@ signals:
 
 public slots:
 private:
+    void _data_to_hole_points();
     void _data_to_points();
+    void _points_to_segments();
     struct triangulateio _create_input() const;
     struct triangulateio _create_mid() const;
     void _set_lines_by_triangles(const triangulateio& io);
@@ -45,8 +47,10 @@ private:
     QVector<QPolygonF>         _holes;
     QVector<QVector<QPointF> > _hexagonals;
     QVector<QPointF>           _points;
-    QVector<QVector<int> >     _hole_points;
-    QVector<QVector<int> >     _hex_points;
+    QVector<QVector<int> >     _hole_indices;
+    QVector<QVector<int> >     _hex_indices;
+    QVector<QPair<int, int> >  _segments;
+    QVector<QPointF>           _hole_points;
     QVector<QLineF>            _lines;
 };
 
