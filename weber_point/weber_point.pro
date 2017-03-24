@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     triangle.cpp \
     inputmanager.cpp \
-    cdtmanager.cpp
+    cdtmanager.cpp \
+    panel.cpp
 
 HEADERS  += mainwindow.h \
     triangle.h \
     inputmanager.h \
-    cdtmanager.h
+    cdtmanager.h \
+    panel.h
 
 DEFINES += ANSI_DECLARATORS \
     TRILIBRARY

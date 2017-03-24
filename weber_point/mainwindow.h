@@ -7,6 +7,7 @@ class QMenu;
 class QAction;
 class QGraphicsScene;
 class QGraphicsView;
+class QDockWdiget;
 
 class MainWindow : public QMainWindow
 {
@@ -28,11 +29,12 @@ private slots:
     void _zoom_fit();
 
 private:
+    void _create_dock_widget();
     void _create_actions();
     void _create_menus();
 
     QMenu*          _file_menu;
-    QMenu*          _zoom_menu;
+    QMenu*          _view_menu;
     QAction*        _initialize_act;
     QAction*        _hexagonal_act;
     QAction*        _cdt_act;
@@ -43,6 +45,7 @@ private:
     QAction*        _zoom_fit_act;
     QGraphicsScene* _scene;
     QGraphicsView*  _view;
+    QDockWidget*    _dock;
 };
 
 #endif // MAINWINDOW_H

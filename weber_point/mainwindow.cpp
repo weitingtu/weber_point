@@ -1,16 +1,18 @@
 #include "mainwindow.h"
 #include "inputmanager.h"
 #include "cdtmanager.h"
+#include "panel.h"
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsTextItem>
 #include <QAction>
 #include <QMenuBar>
+#include <QDockWidget>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
     _file_menu(nullptr),
-    _zoom_menu(nullptr),
+    _view_menu(nullptr),
     _initialize_act(nullptr),
     _hexagonal_act(nullptr),
     _cdt_act(nullptr),
@@ -20,11 +22,13 @@ MainWindow::MainWindow(QWidget *parent)
     _zoom_out_act(nullptr),
     _zoom_fit_act(nullptr),
     _scene(new QGraphicsScene(this)),
-    _view(new QGraphicsView(_scene, this))
+    _view(new QGraphicsView(_scene, this)),
+    _dock(new QDockWidget(tr("Control Panel"), this))
 {
+    setCentralWidget(_view);
+    _create_dock_widget();
     _create_actions();
     _create_menus();
-    setCentralWidget(_view);
 }
 
 MainWindow::~MainWindow()
@@ -39,6 +43,13 @@ QSize MainWindow::minimumSizeHint() const
 QSize MainWindow::sizeHint() const
 {
     return QSize(800, 600);
+}
+
+void MainWindow::_create_dock_widget()
+{
+    _dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    _dock->setWidget(new Panel(this));
+    addDockWidget(Qt::RightDockWidgetArea, _dock);
 }
 
 void MainWindow::_create_actions()
@@ -74,10 +85,12 @@ void MainWindow::_create_menus()
     _file_menu->addAction(_cdt_act);
     _file_menu->addAction(_accumulation_act);
     _file_menu->addAction(_decompose_act);
-    _zoom_menu = menuBar()->addMenu(tr("Zoom"));
-    _zoom_menu->addAction(_zoom_in_act);
-    _zoom_menu->addAction(_zoom_out_act);
-    _zoom_menu->addAction(_zoom_fit_act);
+    _view_menu = menuBar()->addMenu(tr("View"));
+    _view_menu->addAction(_dock->toggleViewAction());
+    _view_menu->addSeparator();
+    _view_menu->addAction(_zoom_in_act);
+    _view_menu->addAction(_zoom_out_act);
+    _view_menu->addAction(_zoom_fit_act);
 }
 
 void MainWindow::_initialize()
