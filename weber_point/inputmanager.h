@@ -18,6 +18,10 @@ public:
 
     void set_width(double width) { _width = width; }
     void set_height(double height) { _height = height; }
+    void add_source(const QPolygonF& p) { _sources.push_back(p); }
+    void add_obstacle(const QPolygonF& p) { _obstacles.push_back(p); }
+    void clear() { _sources.clear(); _obstacles.clear(); }
+
     double get_width() const { return _width; }
     double get_height() const { return _height; }
     const QVector<QPolygonF>& get_sources() const { return _sources; }

@@ -12,6 +12,18 @@ CDTManager::CDTManager(QObject *parent) : QObject(parent),
 {
 }
 
+void CDTManager::clear()
+{
+    _holes.clear();
+    _hexagonals.clear();
+    _points.clear();
+    _hole_indices.clear();
+    _hex_indices.clear();
+    _segments.clear();
+    _hole_points.clear();
+    _lines.clear();
+}
+
 void CDTManager::cdt()
 {
     if(_hexagonals.empty())
@@ -77,9 +89,7 @@ void CDTManager::_data_to_points()
         for(int j = 0; j < _hexagonals[i].size(); ++j, ++idx)
         {
             _hex_indices[i].push_back(idx);
-            printf("%d ", idx);
         }
-        printf("\n");
     }
     _hole_indices.clear();
     _hole_indices.resize(_holes.size());

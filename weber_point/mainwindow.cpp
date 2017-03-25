@@ -2,6 +2,7 @@
 #include "inputmanager.h"
 #include "cdtmanager.h"
 #include "panel.h"
+#include "scene.h"
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsTextItem>
@@ -13,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
     _file_menu(nullptr),
     _view_menu(nullptr),
-    _initialize_act(nullptr),
+    _clear_act(nullptr),
     _hexagonal_act(nullptr),
     _cdt_act(nullptr),
     _accumulation_act(nullptr),
@@ -21,10 +22,12 @@ MainWindow::MainWindow(QWidget *parent)
     _zoom_in_act(nullptr),
     _zoom_out_act(nullptr),
     _zoom_fit_act(nullptr),
-    _scene(new QGraphicsScene(this)),
+    _scene(new Scene(this)),
     _view(new QGraphicsView(_scene, this)),
+    _panel(new Panel(this)),
     _dock(new QDockWidget(tr("Control Panel"), this))
 {
+    connect(_panel, SIGNAL(mode_changed(MODE)), _scene, SLOT(set_mode(MODE)));
     setCentralWidget(_view);
     _create_dock_widget();
     _create_actions();
@@ -37,32 +40,30 @@ MainWindow::~MainWindow()
 
 QSize MainWindow::minimumSizeHint() const
 {
-    return QSize(400, 200);
+    return QSize(800, 600);
 }
 
 QSize MainWindow::sizeHint() const
 {
-    return QSize(800, 600);
+    return QSize(1024, 768);
 }
 
 void MainWindow::_create_dock_widget()
 {
     _dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    _dock->setWidget(new Panel(this));
+    _dock->setWidget(_panel);
     addDockWidget(Qt::RightDockWidgetArea, _dock);
 }
 
 void MainWindow::_create_actions()
 {
-    _initialize_act   = new QAction(tr("&Initialize"), this);
-    _initialize_act->setCheckable(true);
-    connect(_initialize_act, SIGNAL(toggled(bool)), this, SLOT(_initialize()));
+    _clear_act   = new QAction(tr("&Clear"), this);
+    connect(_clear_act, SIGNAL(triggered(bool)), this, SLOT(_clear()));
+
     _hexagonal_act    = new QAction(tr("&Hexagonal"), this);
-    _hexagonal_act->setCheckable(true);
-    connect(_hexagonal_act, SIGNAL(toggled(bool)), this, SLOT(_hexagonal()));
+    connect(_hexagonal_act, SIGNAL(triggered(bool)), this, SLOT(_hexagonal()));
     _cdt_act    = new QAction(tr("&CDT"), this);
-    _cdt_act->setCheckable(true);
-    connect(_cdt_act, SIGNAL(toggled(bool)), this, SLOT(_cdt()));
+    connect(_cdt_act, SIGNAL(triggered(bool)), this, SLOT(_cdt()));
     _accumulation_act = new QAction(tr("&Accumulation"), this);
     _decompose_act    = new QAction(tr("&Decompose"), this);
 
@@ -80,7 +81,8 @@ void MainWindow::_create_actions()
 void MainWindow::_create_menus()
 {
     _file_menu = menuBar()->addMenu(tr("File"));
-    _file_menu->addAction(_initialize_act);
+    _file_menu->addAction(_clear_act);
+    _file_menu->addSeparator();
     _file_menu->addAction(_hexagonal_act);
     _file_menu->addAction(_cdt_act);
     _file_menu->addAction(_accumulation_act);
@@ -93,27 +95,12 @@ void MainWindow::_create_menus()
     _view_menu->addAction(_zoom_fit_act);
 }
 
-void MainWindow::_initialize()
+void MainWindow::_clear()
 {
-    // boundary
-    double width  = get_input_manager().get_width();
-    double height = get_input_manager().get_height();
-    double w = width * 0.1;
-    double h = height * 0.1;
-    _scene->setSceneRect(0 - w, 0 - h, width + 2 * w, height + 2 * h);
-
-    _scene->addRect(0, 0, width, height);
-
-    const QVector<QPolygonF>& sources = get_input_manager().get_sources();
-    for(int i = 0; i < sources.size(); ++i)
-    {
-        _scene->addPolygon(sources[i], QPen(), QBrush(Qt::gray));
-    }
-    const QVector<QPolygonF>& obstacles = get_input_manager().get_obstacles();
-    for(int i = 0; i < obstacles.size(); ++i)
-    {
-        _scene->addPolygon(obstacles[i], QPen(), QBrush(Qt::black));
-    }
+    _scene->clear();
+    get_input_manager().clear();
+    get_cdt_manager().clear();
+    _scene->initialize();
 }
 
 void MainWindow::_hexagonal()
@@ -129,7 +116,7 @@ void MainWindow::_hexagonal()
     get_input_manager().set_height(y_ratio * h);
 
     _scene->clear();
-    _initialize();
+    _scene->initialize();
 
     get_cdt_manager().clear();
     get_cdt_manager().add_holes(get_input_manager().get_sources());

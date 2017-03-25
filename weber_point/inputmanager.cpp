@@ -6,18 +6,6 @@ InputManager::InputManager(QObject *parent) : QObject(parent),
     _sources(),
     _obstacles()
 {
-    {
-        QPolygonF poly(QVector<QPointF>{QPointF(10, 10), QPoint(20, 10), QPoint(20, 20), QPoint(10, 20), QPoint(10, 10)});
-        _sources << poly;
-    }
-    {
-        QPolygonF poly(QVector<QPointF>{QPointF(510, 210), QPoint(520, 210), QPoint(520, 220), QPoint(510, 220), QPoint(510, 210)});
-        _sources << poly;
-    }
-    {
-        QPolygonF poly(QVector<QPointF>{QPointF(100, 100), QPoint(100, 150), QPoint(150, 150), QPoint(150, 100), QPoint(100, 100)});
-        _obstacles << poly;
-    }
 }
 
 bool InputManager::is_blocked(const QPointF& point) const

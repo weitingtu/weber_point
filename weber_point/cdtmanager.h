@@ -28,7 +28,7 @@ public:
 
     void add_holes(const QVector<QPolygonF>& holes) { _holes += holes; }
     void add_hexagonals(const QVector<QPointF>& points) { _hexagonals.push_back(points); }
-    void clear() { _holes.clear(); _hexagonals.clear(); _lines.clear(); }
+    void clear();
     void cdt();
 
     const QVector<QLineF>& get_lines() const { return _lines; }

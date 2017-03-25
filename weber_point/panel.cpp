@@ -8,7 +8,10 @@ Panel::Panel(QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(createSourceObstacleGroup());
-    vbox->addWidget(new QPushButton(tr("Initialize"), this));
+    vbox->addWidget(new QPushButton(tr("&Clear"), this));
+    vbox->addWidget(new QPushButton(tr("&Hexagonal"), this));
+    vbox->addWidget(new QPushButton(tr("&Accumulation"), this));
+    vbox->addWidget(new QPushButton(tr("&Decompose"), this));
     vbox->addStretch(1);
     setLayout(vbox);
 }
@@ -22,6 +25,11 @@ QGroupBox* Panel::createSourceObstacleGroup()
     QRadioButton *radio3 = new QRadioButton(tr("Obstacle Rectangle"));
     QRadioButton *radio4 = new QRadioButton(tr("Obstacle Polygon"));
 
+    connect(radio1, SIGNAL(toggled(bool)), this, SLOT(_create_source_rect(bool)));
+    connect(radio2, SIGNAL(toggled(bool)), this, SLOT(_create_source_poly(bool)));
+    connect(radio3, SIGNAL(toggled(bool)), this, SLOT(_create_obs_rect(bool)));
+    connect(radio4, SIGNAL(toggled(bool)), this, SLOT(_create_obs_poly(bool)));
+
     radio1->setChecked(true);
 
     QVBoxLayout *vbox = new QVBoxLayout;
@@ -33,4 +41,36 @@ QGroupBox* Panel::createSourceObstacleGroup()
     groupBox->setLayout(vbox);
 
     return groupBox;
+}
+
+void Panel::_create_source_rect( bool checked ) const
+{
+    if( checked )
+    {
+        emit mode_changed( MODE::CREATE_SOURCE_RECT );
+    }
+}
+
+void Panel::_create_source_poly( bool checked ) const
+{
+    if( checked )
+    {
+        emit mode_changed( MODE::CREATE_SOURCE_POLY );
+    }
+}
+
+void Panel::_create_obs_rect( bool checked ) const
+{
+    if( checked )
+    {
+        emit mode_changed( MODE::CREATE_OBS_RECT );
+    }
+}
+
+void Panel::_create_obs_poly( bool checked ) const
+{
+    if( checked )
+    {
+        emit mode_changed( MODE::CREATE_OBS_POLY );
+    }
 }

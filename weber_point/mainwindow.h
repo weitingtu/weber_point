@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+class Scene;
+class Panel;
 class QMenu;
 class QAction;
 class QGraphicsScene;
@@ -21,7 +23,7 @@ public:
     virtual QSize sizeHint() const override;
 
 private slots:
-    void _initialize();
+    void _clear();
     void _hexagonal();
     void _cdt();
     void _zoom_in();
@@ -35,7 +37,7 @@ private:
 
     QMenu*          _file_menu;
     QMenu*          _view_menu;
-    QAction*        _initialize_act;
+    QAction*        _clear_act;
     QAction*        _hexagonal_act;
     QAction*        _cdt_act;
     QAction*        _accumulation_act;
@@ -43,8 +45,9 @@ private:
     QAction*        _zoom_in_act;
     QAction*        _zoom_out_act;
     QAction*        _zoom_fit_act;
-    QGraphicsScene* _scene;
+    Scene*          _scene;
     QGraphicsView*  _view;
+    Panel*          _panel;
     QDockWidget*    _dock;
 };
 

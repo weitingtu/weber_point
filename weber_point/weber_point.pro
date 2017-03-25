@@ -17,13 +17,16 @@ SOURCES += main.cpp\
     triangle.cpp \
     inputmanager.cpp \
     cdtmanager.cpp \
-    panel.cpp
+    panel.cpp \
+    scene.cpp
 
 HEADERS  += mainwindow.h \
     triangle.h \
     inputmanager.h \
     cdtmanager.h \
-    panel.h
+    panel.h \
+    scene.h \
+    enum.h
 
 DEFINES += ANSI_DECLARATORS \
     TRILIBRARY
