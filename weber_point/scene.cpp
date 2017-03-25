@@ -49,6 +49,43 @@ QRectF _create_rectf(const QPointF& p1, const QPointF& p2)
      return QRectF(x, y, w, h);
 }
 
+bool _is_valid(const QPolygonF& p)
+{
+    for(int i = 0; i < p.size() - 1; ++i)
+    {
+        int p1 = i;
+        int p2 = i + 1;
+        if( p2 == p.size() - 1)
+        {
+            p2 = 0;
+        }
+
+        QLineF l1(p[p1], p[p2]);
+        for(int j = 0; j < p.size() - 1; ++j)
+        {
+            int p3 = j;
+            int p4 = j + 1;
+            if( p4 == p.size() - 1)
+            {
+                p4 = 0;
+            }
+
+            if(( p1 == p3 ) || ( p1 == p4 ) || ( p2 == p3 ) || ( p2 == p4 ))
+            {
+                continue;
+            }
+
+            QLineF l2(p[p3], p[p4]);
+            QPointF p;
+            if(QLineF::BoundedIntersection == l1.intersect(l2, &p))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 }
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -85,15 +122,18 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             {
                 _points.push_back(_points.front());
                 QPolygonF poly(_points);
-                if( MODE::CREATE_SOURCE_POLY == _mode )
+                if( _is_valid(poly) )
                 {
-                    addPolygon( poly, QPen(), QBrush(Qt::gray));
-                    get_input_manager().add_source( poly );
-                }
-                else if( MODE::CREATE_OBS_POLY == _mode )
-                {
-                    addPolygon( poly, QPen(), QBrush(Qt::black));
-                    get_input_manager().add_obstacle( poly );
+                    if( MODE::CREATE_SOURCE_POLY == _mode )
+                    {
+                        addPolygon( poly, QPen(), QBrush(Qt::gray));
+                        get_input_manager().add_source( poly );
+                    }
+                    else if( MODE::CREATE_OBS_POLY == _mode )
+                    {
+                        addPolygon( poly, QPen(), QBrush(Qt::black));
+                        get_input_manager().add_obstacle( poly );
+                    }
                 }
             }
             _points.clear();
