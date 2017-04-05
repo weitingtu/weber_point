@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "inputmanager.h"
 #include "cdtmanager.h"
+#include "fermatpoint.h"
 #include "panel.h"
 #include "scene.h"
 #include <QGraphicsScene>
@@ -9,6 +10,7 @@
 #include <QAction>
 #include <QMenuBar>
 #include <QDockWidget>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -65,6 +67,7 @@ void MainWindow::_create_actions()
     _cdt_act    = new QAction(tr("&CDT"), this);
     connect(_cdt_act, SIGNAL(triggered(bool)), this, SLOT(_cdt()));
     _accumulation_act = new QAction(tr("&Accumulation"), this);
+    connect(_accumulation_act, SIGNAL(triggered(bool)), this, SLOT(_fermat_point()));
     _decompose_act    = new QAction(tr("&Decompose"), this);
 
     _zoom_in_act      = new QAction(tr("Zoom in"), this);
@@ -103,9 +106,21 @@ void MainWindow::_clear()
     _scene->initialize();
 }
 
+namespace  {
+
+//double _get_hex( double total_area, double source_area )
+//{
+//    double x = 1.0;
+//    double ratio = total_area / source_area;
+//    return sqrt( ( ratio * 2 ) / ( x * 3 * sqrt( 3.0 ) )  );
+//}
+
+}
+
 void MainWindow::_hexagonal()
 {
     double a = 40;
+//    double a = _get_hex(get_input_manager().get_total_area(), get_input_manager().get_source_area());
     double h = a * std::sqrt(3);
     double width  = get_input_manager().get_width();
     double height = get_input_manager().get_height();
@@ -158,6 +173,19 @@ void MainWindow::_cdt()
     for(int i = 0; i < lines.size(); ++i)
     {
         _scene->addLine(lines[i]);
+    }
+}
+
+void MainWindow::_fermat_point()
+{
+    const QVector<Triangle>& triangles = get_cdt_manager().get_triangles();
+    for(int i = 0; i < triangles.size(); ++i)
+    {
+//        QPointF fermat_point = FermatPoint::CalcFermatPoint(triangles[i]);
+        const Triangle&t = triangles[i];
+        QPointF fermat_point = QPointF((t.points[0].x() + t.points[1].x() + t.points[2].x()) / 3, (t.points[0].y() + t.points[1].y() + t.points[2].y()) / 3);
+        const double rad = 1;
+        _scene->addEllipse(fermat_point.x() - rad, fermat_point.y() - rad, rad * 2, rad * 2);
     }
 }
 

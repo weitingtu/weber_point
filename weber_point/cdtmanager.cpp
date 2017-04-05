@@ -7,8 +7,9 @@ CDTManager::CDTManager(QObject *parent) : QObject(parent),
     _hole_indices(),
     _hex_indices(),
     _segments(),
-    _hole_points(),
-    _lines()
+    _hole_center_points(),
+    _lines(),
+    _triangles()
 {
 }
 
@@ -20,8 +21,9 @@ void CDTManager::clear()
     _hole_indices.clear();
     _hex_indices.clear();
     _segments.clear();
-    _hole_points.clear();
+    _hole_center_points.clear();
     _lines.clear();
+    _triangles.clear();
 }
 
 void CDTManager::cdt()
@@ -31,17 +33,18 @@ void CDTManager::cdt()
         return;
     }
 
-    _data_to_hole_points();
+    _data_to_hole_center_points();
     _data_to_points();
     _points_to_segments();
 
-    struct triangulateio in = _create_input();
+    struct triangulateio in  = _create_input();
     struct triangulateio mid = _create_mid();
 
     char options[] = "pczAen";
     triangulate(options, &in, &mid, (struct triangulateio *) NULL );
 
     _set_lines_by_edges(mid);
+    _set_triangles(mid);
 
     free(in.pointlist);
     free(in.segmentlist);
@@ -59,9 +62,9 @@ void CDTManager::cdt()
     free(mid.edgemarkerlist);
 }
 
-void CDTManager::_data_to_hole_points()
+void CDTManager::_data_to_hole_center_points()
 {
-    _hole_points.clear();
+    _hole_center_points.clear();
     for(int i = 0; i < _holes.size(); ++i)
     {
         double x = _holes[i][0].x();
@@ -73,7 +76,7 @@ void CDTManager::_data_to_hole_points()
         }
         x /= (_holes[i].size() - 1);
         y /= (_holes[i].size() - 1);
-        _hole_points.push_back(QPointF(x, y));
+        _hole_center_points.push_back(QPointF(x, y));
     }
 }
 
@@ -156,12 +159,12 @@ struct triangulateio CDTManager::_create_input() const
         in.segmentlist[i * 2]     = _segments[i].first;
         in.segmentlist[i * 2 + 1] = _segments[i].second;
     }
-    in.numberofholes = _hole_points.size();
+    in.numberofholes = _hole_center_points.size();
     in.holelist = (REAL*) malloc(in.numberofholes * 2 * sizeof(REAL));
-    for(int i = 0; i < _hole_points.size(); ++i)
+    for(int i = 0; i < _hole_center_points.size(); ++i)
     {
-        in.holelist[i * 2]     = _hole_points[i].x();
-        in.holelist[i * 2 + 1] = _hole_points[i].y();
+        in.holelist[i * 2]     = _hole_center_points[i].x();
+        in.holelist[i * 2 + 1] = _hole_center_points[i].y();
     }
     in.numberofregions = 0;
 
@@ -205,5 +208,49 @@ void CDTManager::_set_lines_by_edges(const triangulateio& io)
         int idx1 = io.edgelist[i * 2] * 2;
         int idx2 = io.edgelist[i * 2 + 1] * 2;
         _lines.push_back(QLineF(QPointF(io.pointlist[idx1], io.pointlist[idx1 +1]), QPointF(io.pointlist[idx2], io.pointlist[idx2 + 1])));
+    }
+}
+
+void CDTManager::_set_triangles(const triangulateio& io)
+{
+//      for (int i = 0; i < io.numberoftriangles; i++) {
+//          printf("Triangle %4d points:", i);
+//          for (int j = 0; j < io.numberofcorners; j++) {
+//            printf("  %4d", io.trianglelist[i * io.numberofcorners + j]);
+//            int idx = io.trianglelist[i * io.numberofcorners + j];
+//            printf(" (%f, %f)", io.pointlist[idx * 2], io.pointlist[idx * 2 + 1 ]);
+//          }
+//          if (io.numberoftriangleattributes > 0) {
+//            printf("   attributes");
+//          }
+//          for (int j = 0; j < io.numberoftriangleattributes; j++) {
+//            printf("  %.6g", io.triangleattributelist[i *
+//                                           io.numberoftriangleattributes + j]);
+//          }
+//          printf("\n");
+
+//          printf("Triangle %4d neighbors:", i);
+//          for (int j = 0; j < 3; j++) {
+//            printf("  %4d", io.neighborlist[i * 3 + j]);
+//          }
+//          printf("\n");
+//      }
+//      printf("\n");
+
+    _triangles.clear();
+    for (int i = 0; i < io.numberoftriangles; i++)
+    {
+        Triangle t;
+        for (int j = 0; j < io.numberofcorners; j++)
+        {
+            int idx = io.trianglelist[i * io.numberofcorners + j];
+            t.points[j] = QPointF(io.pointlist[idx * 2], io.pointlist[idx * 2 + 1 ]);
+        }
+
+        for (int j = 0; j < 3; j++)
+        {
+            t.neighbors[j] = io.neighborlist[i * 3 + j];
+        }
+        _triangles.push_back(t);
     }
 }

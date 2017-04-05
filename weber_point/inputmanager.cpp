@@ -26,3 +26,19 @@ bool InputManager::is_blocked(const QPointF& point) const
     }
     return false;
 }
+
+double InputManager::get_source_area() const
+{
+    double area = 0;
+    for(int i = 0; i < _sources.size(); ++i)
+    {
+        QRectF r = _sources[i].boundingRect();
+        area += r.width() * r.height();
+    }
+    return area;
+}
+
+double InputManager::get_total_area() const
+{
+    return _width * _height;
+}

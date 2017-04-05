@@ -26,6 +26,7 @@ private slots:
     void _clear();
     void _hexagonal();
     void _cdt();
+    void _fermat_point();
     void _zoom_in();
     void _zoom_out();
     void _zoom_fit();

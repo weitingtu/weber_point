@@ -14,19 +14,23 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    triangle.cpp \
     inputmanager.cpp \
     cdtmanager.cpp \
     panel.cpp \
-    scene.cpp
+    scene.cpp \
+    fermatpoint.cpp \
+    triangulation.cpp \
+    triangle.cpp
 
 HEADERS  += mainwindow.h \
-    triangle.h \
     inputmanager.h \
     cdtmanager.h \
     panel.h \
     scene.h \
-    enum.h
+    enum.h \
+    fermatpoint.h \
+    triangulation.h \
+    triangle.h
 
 DEFINES += ANSI_DECLARATORS \
     TRILIBRARY
