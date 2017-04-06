@@ -10,6 +10,7 @@
 #include <QAction>
 #include <QMenuBar>
 #include <QDockWidget>
+#include <QPushButton>
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -34,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
     _create_dock_widget();
     _create_actions();
     _create_menus();
+    _connect_panel();
 }
 
 MainWindow::~MainWindow()
@@ -96,6 +98,14 @@ void MainWindow::_create_menus()
     _view_menu->addAction(_zoom_in_act);
     _view_menu->addAction(_zoom_out_act);
     _view_menu->addAction(_zoom_fit_act);
+}
+
+void MainWindow::_connect_panel()
+{
+    connect(_panel->get_clear_button(), SIGNAL(clicked(bool)), this, SLOT(_clear()));
+    connect(_panel->get_hex_button(), SIGNAL(clicked(bool)), this, SLOT(_hexagonal()));
+    connect(_panel->get_cdt_button(), SIGNAL(clicked(bool)), this, SLOT(_cdt()));
+    connect(_panel->get_accumulation_button(), SIGNAL(clicked(bool)), this, SLOT(_fermat_point()));
 }
 
 void MainWindow::_clear()
@@ -178,6 +188,7 @@ void MainWindow::_cdt()
 
 void MainWindow::_fermat_point()
 {
+    get_cdt_manager().fermat_point();
     const QVector<Triangle>& triangles = get_cdt_manager().get_triangles();
     for(int i = 0; i < triangles.size(); ++i)
     {

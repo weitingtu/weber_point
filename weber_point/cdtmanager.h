@@ -31,6 +31,7 @@ public:
     void add_hexagonals(const QVector<QPointF>& points) { _hexagonals.push_back(points); }
     void clear();
     void cdt();
+    void fermat_point();
 
     const QVector<QLineF>&   get_lines() const { return _lines; }
     const QVector<Triangle>& get_triangles() const { return _triangles; }

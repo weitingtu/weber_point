@@ -8,6 +8,7 @@ class Triangle
 public:
     Triangle();
     QPointF points[3];
+    int index[3];
     int neighbors[3];
 };
 

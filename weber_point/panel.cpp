@@ -4,19 +4,25 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-Panel::Panel(QWidget *parent) : QWidget(parent)
+Panel::Panel(QWidget *parent) : QWidget(parent),
+    _clear(new QPushButton(tr("&Clear"), this)),
+    _hex(new QPushButton(tr("&Hexagonal"), this)),
+    _cdt(new QPushButton(tr("C&DT"), this)),
+    _accumulation(new QPushButton(tr("&Accumulation"), this)),
+    _decompose(new QPushButton(tr("&Decompose"), this))
 {
     QVBoxLayout *vbox = new QVBoxLayout;
-    vbox->addWidget(createSourceObstacleGroup());
-    vbox->addWidget(new QPushButton(tr("&Clear"), this));
-    vbox->addWidget(new QPushButton(tr("&Hexagonal"), this));
-    vbox->addWidget(new QPushButton(tr("&Accumulation"), this));
-    vbox->addWidget(new QPushButton(tr("&Decompose"), this));
+    vbox->addWidget(_createSourceObstacleGroup());
+    vbox->addWidget(_clear);
+    vbox->addWidget(_hex);
+    vbox->addWidget(_cdt);
+    vbox->addWidget(_accumulation);
+    vbox->addWidget(_decompose);
     vbox->addStretch(1);
     setLayout(vbox);
 }
 
-QGroupBox* Panel::createSourceObstacleGroup()
+QGroupBox* Panel::_createSourceObstacleGroup()
 {
     QGroupBox *groupBox = new QGroupBox(tr("Input Setup"));
 

@@ -35,6 +35,7 @@ private:
     void _create_dock_widget();
     void _create_actions();
     void _create_menus();
+    void _connect_panel();
 
     QMenu*          _file_menu;
     QMenu*          _view_menu;

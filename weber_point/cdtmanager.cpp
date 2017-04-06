@@ -1,4 +1,5 @@
 #include "cdtmanager.h"
+#include <QMap>
 
 CDTManager::CDTManager(QObject *parent) : QObject(parent),
     _holes(),
@@ -104,12 +105,15 @@ void CDTManager::_data_to_points()
         for(int j = 0; j < _holes[i].size() - 1; ++j, ++idx)
         {
             hole_indices.push_back(idx);
+            printf("add %d ", idx);
         }
         if(!hole_indices.empty())
         {
             // add start point
             hole_indices.push_back(hole_indices.front());
+            printf("add %d ", hole_indices.front());
         }
+        printf("\n");
         _hole_indices[i] = hole_indices;
     }
 }
@@ -213,30 +217,6 @@ void CDTManager::_set_lines_by_edges(const triangulateio& io)
 
 void CDTManager::_set_triangles(const triangulateio& io)
 {
-//      for (int i = 0; i < io.numberoftriangles; i++) {
-//          printf("Triangle %4d points:", i);
-//          for (int j = 0; j < io.numberofcorners; j++) {
-//            printf("  %4d", io.trianglelist[i * io.numberofcorners + j]);
-//            int idx = io.trianglelist[i * io.numberofcorners + j];
-//            printf(" (%f, %f)", io.pointlist[idx * 2], io.pointlist[idx * 2 + 1 ]);
-//          }
-//          if (io.numberoftriangleattributes > 0) {
-//            printf("   attributes");
-//          }
-//          for (int j = 0; j < io.numberoftriangleattributes; j++) {
-//            printf("  %.6g", io.triangleattributelist[i *
-//                                           io.numberoftriangleattributes + j]);
-//          }
-//          printf("\n");
-
-//          printf("Triangle %4d neighbors:", i);
-//          for (int j = 0; j < 3; j++) {
-//            printf("  %4d", io.neighborlist[i * 3 + j]);
-//          }
-//          printf("\n");
-//      }
-//      printf("\n");
-
     _triangles.clear();
     for (int i = 0; i < io.numberoftriangles; i++)
     {
@@ -244,7 +224,9 @@ void CDTManager::_set_triangles(const triangulateio& io)
         for (int j = 0; j < io.numberofcorners; j++)
         {
             int idx = io.trianglelist[i * io.numberofcorners + j];
-            t.points[j] = QPointF(io.pointlist[idx * 2], io.pointlist[idx * 2 + 1 ]);
+//            t.points[j] = QPointF(io.pointlist[idx * 2], io.pointlist[idx * 2 + 1 ]);
+            t.points[j] = _points[idx];
+            t.index[j]  = idx;
         }
 
         for (int j = 0; j < 3; j++)
@@ -254,3 +236,65 @@ void CDTManager::_set_triangles(const triangulateio& io)
         _triangles.push_back(t);
     }
 }
+
+void CDTManager::fermat_point()
+{
+    QMap<int, QVector<int> > map;
+    for(int i = 0;i < _triangles.size(); ++i)
+    {
+        const Triangle& t = _triangles[i];
+        for(int j = 0; j < 3; ++j)
+        {
+            if(t.index[j] >= 0)
+            {
+                map[t.index[j]].push_back(i);
+            }
+        }
+    }
+
+    for(int i = 0; i < _hole_indices.size(); ++i)
+    {
+        QMap<int, int> count;
+        for(int j = 0; j < _hole_indices[i].size() - 1; ++j)
+        {
+            int idx = _hole_indices[i][j];
+            if(!map.contains(idx))
+            {
+                continue;
+            }
+            const QVector<int>& v = map[idx];
+//            printf("%d: ", idx);
+            for(int k = 0; k < v.size(); ++k)
+            {
+                count[v[k]]++;
+//                printf("%d ", v[k]);
+            }
+//            printf("\n");
+        }
+
+//        for(int j = 0; j < _hole_indices[i].size() - 1; ++j)
+//        {
+//            int idx = _hole_indices[i][j];
+//            printf("hole idx %d ", idx);
+//        }
+//        printf("\n");
+
+        QMap<int, int>::const_iterator ite     = count.constBegin();
+        QMap<int, int>::const_iterator ite_end = count.constEnd();
+        for(; ite != ite_end; ++ite)
+        {
+            if(ite.value() != 2)
+            {
+                continue;
+            }
+            const Triangle& t = _triangles[ite.key()];
+//            printf("%d: ", ite.key());
+            for(int k = 0; k < 3; ++k)
+            {
+                printf("%d ", t.index[k]);
+            }
+//            printf("\n");
+        }
+    }
+}
+
