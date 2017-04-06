@@ -3,30 +3,36 @@
 
 CDTManager::CDTManager(QObject *parent) : QObject(parent),
     _sources(),
-    _holes(),
+    _obstacles(),
     _hexagonals(),
     _points(),
-    _hole_indices(),
+    _source_indices(),
+    _obstacle_indices(),
     _hex_indices(),
     _segments(),
     _hole_center_points(),
     _lines(),
-    _triangles()
+    _triangles(),
+    _f_points(),
+    _f_lines()
 {
 }
 
 void CDTManager::clear()
 {
     _sources.clear();
-    _holes.clear();
+    _obstacles.clear();
     _hexagonals.clear();
     _points.clear();
-    _hole_indices.clear();
+    _source_indices.clear();
+    _obstacle_indices.clear();
     _hex_indices.clear();
     _segments.clear();
     _hole_center_points.clear();
     _lines.clear();
     _triangles.clear();
+    _f_points.clear();
+    _f_lines.clear();
 }
 
 void CDTManager::cdt()
@@ -65,21 +71,49 @@ void CDTManager::cdt()
     free(mid.edgemarkerlist);
 }
 
+void CDTManager::_data_to_hole_center_points(const QVector<QPolygonF>& poly)
+{
+    for(int i = 0; i < poly.size(); ++i)
+    {
+        double x = poly[i][0].x();
+        double y = poly[i][0].y();
+        for(int j = 1; j < poly[i].size() - 1; ++j)
+        {
+            x += poly[i][j].x();
+            y += poly[i][j].y();
+        }
+        x /= (poly[i].size() - 1);
+        y /= (poly[i].size() - 1);
+        _hole_center_points.push_back(QPointF(x, y));
+    }
+}
+
 void CDTManager::_data_to_hole_center_points()
 {
     _hole_center_points.clear();
-    for(int i = 0; i < _holes.size(); ++i)
+    _data_to_hole_center_points(_sources);
+    _data_to_hole_center_points(_obstacles);
+}
+
+void CDTManager::_poly_to_points(const QVector<QPolygonF>& poly, QVector<QPointF>& points, QVector<QVector<int> >& indices, int& idx )
+{
+    indices.clear();
+    indices.resize(poly.size());
+    for(int i = 0; i < poly.size(); ++i)
     {
-        double x = _holes[i][0].x();
-        double y = _holes[i][0].y();
-        for(int j = 1; j < _holes[i].size() - 1; ++j)
+        points += poly[i];
+        points.pop_back();
+        QVector<int> hole_indices;
+        for(int j = 0; j < poly[i].size() - 1; ++j, ++idx)
         {
-            x += _holes[i][j].x();
-            y += _holes[i][j].y();
+            hole_indices.push_back(idx);
         }
-        x /= (_holes[i].size() - 1);
-        y /= (_holes[i].size() - 1);
-        _hole_center_points.push_back(QPointF(x, y));
+        if(!hole_indices.empty())
+        {
+            // add start point
+            hole_indices.push_back(hole_indices.front());
+        }
+        indices[i] = hole_indices;
     }
 }
 
@@ -97,27 +131,8 @@ void CDTManager::_data_to_points()
             _hex_indices[i].push_back(idx);
         }
     }
-    _hole_indices.clear();
-    _hole_indices.resize(_holes.size());
-    for(int i = 0; i < _holes.size(); ++i)
-    {
-        _points += _holes[i];
-        _points.pop_back();
-        QVector<int> hole_indices;
-        for(int j = 0; j < _holes[i].size() - 1; ++j, ++idx)
-        {
-            hole_indices.push_back(idx);
-            printf("add %d ", idx);
-        }
-        if(!hole_indices.empty())
-        {
-            // add start point
-            hole_indices.push_back(hole_indices.front());
-            printf("add %d ", hole_indices.front());
-        }
-        printf("\n");
-        _hole_indices[i] = hole_indices;
-    }
+    _poly_to_points( _sources, _points, _source_indices, idx );
+    _poly_to_points( _obstacles,   _points, _obstacle_indices,   idx );
 }
 
 void CDTManager::_points_to_segments()
@@ -138,11 +153,19 @@ void CDTManager::_points_to_segments()
         _segments.push_back(qMakePair(_hex_indices[i].back(),  _hex_indices[i + 2].back()));
     }
 
-    for(int i = 0; i < _hole_indices.size(); ++i)
+    for(int i = 0; i < _source_indices.size(); ++i)
     {
-        for(int j = 0; j <_hole_indices[i].size() - 1; ++j)
+        for(int j = 0; j <_source_indices[i].size() - 1; ++j)
         {
-            _segments.push_back(qMakePair(_hole_indices[i][j], _hole_indices[i][j + 1]));
+            _segments.push_back(qMakePair(_source_indices[i][j], _source_indices[i][j + 1]));
+        }
+    }
+
+    for(int i = 0; i < _obstacle_indices.size(); ++i)
+    {
+        for(int j = 0; j <_obstacle_indices[i].size() - 1; ++j)
+        {
+            _segments.push_back(qMakePair(_obstacle_indices[i][j], _obstacle_indices[i][j + 1]));
         }
     }
 }
@@ -261,15 +284,15 @@ void CDTManager::fermat_point()
 {
     QMap<int, QVector<int> > map = _build_triangle_point_map(_triangles);
 
-//    QVector<QVector<int>> hole_neighbors;
-//    hole_neighbors.resize(_hole_indices.size());
+    QVector<QVector<int>> source_neighbors;
+    source_neighbors.resize(_source_indices.size());
 
-    for(int i = 0; i < _hole_indices.size(); ++i)
+    for(int i = 0; i < _source_indices.size(); ++i)
     {
         QMap<int, int> count;
-        for(int j = 0; j < _hole_indices[i].size() - 1; ++j)
+        for(int j = 0; j < _source_indices[i].size() - 1; ++j)
         {
-            int idx = _hole_indices[i][j];
+            int idx = _source_indices[i][j];
             if(!map.contains(idx))
             {
                 continue;
@@ -299,6 +322,7 @@ void CDTManager::fermat_point()
             {
                 continue;
             }
+            source_neighbors[i].push_back(ite.key());
 //            const Triangle& t = _triangles[ite.key()];
 //            printf("%d: ", ite.key());
 //            for(int k = 0; k < 3; ++k)
@@ -306,6 +330,30 @@ void CDTManager::fermat_point()
 //                printf("%d ", t.index[k]);
 //            }
 //            printf("\n");
+        }
+    }
+
+    _f_points.clear();
+    _f_points.resize(_triangles.size());
+    for(int i = 0; i < _triangles.size(); ++i)
+    {
+//        QPointF fermat_point = FermatPoint::CalcFermatPoint(triangles[i]);
+        const Triangle& t = _triangles[i];
+        QPointF fermat_point = QPointF((t.points[0].x() + t.points[1].x() + t.points[2].x()) / 3, (t.points[0].y() + t.points[1].y() + t.points[2].y()) / 3);
+        _f_points[i] = fermat_point;
+    }
+
+    _f_lines.clear();
+    for(int i = 0; i < _triangles.size(); ++i)
+    {
+        const Triangle& t = _triangles[i];
+        for(int j = 0; j < 3; ++j)
+        {
+            if(t.neighbors[j] < 0)
+            {
+                continue;
+            }
+            _f_lines.push_back(QLineF(_f_points[i], _f_points[t.neighbors[j]]));
         }
     }
 }

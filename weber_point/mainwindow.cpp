@@ -144,8 +144,8 @@ void MainWindow::_hexagonal()
     _scene->initialize();
 
     get_cdt_manager().clear();
-    get_cdt_manager().add_holes(get_input_manager().get_sources());
-    get_cdt_manager().add_holes(get_input_manager().get_obstacles());
+    get_cdt_manager().add_sources(get_input_manager().get_sources());
+    get_cdt_manager().add_obstacles(get_input_manager().get_obstacles());
 
     for(int i = 0; i <  2 * y_ratio + 1; ++i)
     {
@@ -189,14 +189,18 @@ void MainWindow::_cdt()
 void MainWindow::_fermat_point()
 {
     get_cdt_manager().fermat_point();
-    const QVector<Triangle>& triangles = get_cdt_manager().get_triangles();
-    for(int i = 0; i < triangles.size(); ++i)
+    const QVector<QPointF>& points = get_cdt_manager().get_f_points();
+    for(int i = 0; i < points.size(); ++i)
     {
-//        QPointF fermat_point = FermatPoint::CalcFermatPoint(triangles[i]);
-        const Triangle&t = triangles[i];
-        QPointF fermat_point = QPointF((t.points[0].x() + t.points[1].x() + t.points[2].x()) / 3, (t.points[0].y() + t.points[1].y() + t.points[2].y()) / 3);
+        const QPointF& p = points[i];
         const double rad = 1;
-        _scene->addEllipse(fermat_point.x() - rad, fermat_point.y() - rad, rad * 2, rad * 2);
+        _scene->addEllipse(p.x() - rad, p.y() - rad, rad * 2, rad * 2);
+    }
+
+    const QVector<QLineF>& lines = get_cdt_manager().get_f_lines();
+    for(int i = 0; i < lines.size(); ++i)
+    {
+        _scene->addLine(lines[i]);
     }
 }
 

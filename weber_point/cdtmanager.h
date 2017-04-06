@@ -27,7 +27,8 @@ public:
     }
     explicit CDTManager(QObject *parent = 0);
 
-    void add_holes(const QVector<QPolygonF>& holes) { _holes += holes; }
+    void add_sources(const QVector<QPolygonF>& sources) { _sources += sources; }
+    void add_obstacles(const QVector<QPolygonF>& obstacles) { _obstacles += obstacles; }
     void add_hexagonals(const QVector<QPointF>& points) { _hexagonals.push_back(points); }
     void clear();
     void cdt();
@@ -35,11 +36,16 @@ public:
 
     const QVector<QLineF>&   get_lines() const { return _lines; }
     const QVector<Triangle>& get_triangles() const { return _triangles; }
+
+    const QVector<QPointF>&  get_f_points() const { return _f_points; }
+    const QVector<QLineF>&   get_f_lines() const { return _f_lines; }
 signals:
 
 public slots:
 private:
+    void _data_to_hole_center_points(const QVector<QPolygonF>& poly);
     void _data_to_hole_center_points();
+    void _poly_to_points(const QVector<QPolygonF>& poly, QVector<QPointF> &points, QVector<QVector<int> >& indices , int &idx);
     void _data_to_points();
     void _points_to_segments();
     struct triangulateio _create_input() const;
@@ -52,11 +58,12 @@ private:
 
     // raw data
     QVector<QPolygonF>         _sources;
-    QVector<QPolygonF>         _holes;
+    QVector<QPolygonF>         _obstacles;
     QVector<QVector<QPointF> > _hexagonals;
 
     QVector<QPointF>           _points;
-    QVector<QVector<int> >     _hole_indices;
+    QVector<QVector<int> >     _source_indices;
+    QVector<QVector<int> >     _obstacle_indices;
     QVector<QVector<int> >     _hex_indices;
     QVector<QPair<int, int> >  _segments;
     QVector<QPointF>           _hole_center_points;
@@ -64,6 +71,9 @@ private:
     // output
     QVector<QLineF>            _lines;
     QVector<Triangle>          _triangles;
+
+    QVector<QPointF>           _f_points;
+    QVector<QLineF>            _f_lines;
 };
 
 inline CDTManager& get_cdt_manager()
