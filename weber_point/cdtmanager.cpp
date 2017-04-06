@@ -2,6 +2,7 @@
 #include <QMap>
 
 CDTManager::CDTManager(QObject *parent) : QObject(parent),
+    _sources(),
     _holes(),
     _hexagonals(),
     _points(),
@@ -16,6 +17,7 @@ CDTManager::CDTManager(QObject *parent) : QObject(parent),
 
 void CDTManager::clear()
 {
+    _sources.clear();
     _holes.clear();
     _hexagonals.clear();
     _points.clear();
@@ -237,12 +239,12 @@ void CDTManager::_set_triangles(const triangulateio& io)
     }
 }
 
-void CDTManager::fermat_point()
+QMap<int, QVector<int> > CDTManager::_build_triangle_point_map(const QVector<Triangle>& triangles)
 {
     QMap<int, QVector<int> > map;
-    for(int i = 0;i < _triangles.size(); ++i)
+    for(int i = 0;i < triangles.size(); ++i)
     {
-        const Triangle& t = _triangles[i];
+        const Triangle& t = triangles[i];
         for(int j = 0; j < 3; ++j)
         {
             if(t.index[j] >= 0)
@@ -251,6 +253,16 @@ void CDTManager::fermat_point()
             }
         }
     }
+
+    return map;
+}
+
+void CDTManager::fermat_point()
+{
+    QMap<int, QVector<int> > map = _build_triangle_point_map(_triangles);
+
+//    QVector<QVector<int>> hole_neighbors;
+//    hole_neighbors.resize(_hole_indices.size());
 
     for(int i = 0; i < _hole_indices.size(); ++i)
     {
@@ -287,12 +299,12 @@ void CDTManager::fermat_point()
             {
                 continue;
             }
-            const Triangle& t = _triangles[ite.key()];
+//            const Triangle& t = _triangles[ite.key()];
 //            printf("%d: ", ite.key());
-            for(int k = 0; k < 3; ++k)
-            {
-                printf("%d ", t.index[k]);
-            }
+//            for(int k = 0; k < 3; ++k)
+//            {
+//                printf("%d ", t.index[k]);
+//            }
 //            printf("\n");
         }
     }

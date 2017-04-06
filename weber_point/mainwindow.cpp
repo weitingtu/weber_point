@@ -129,7 +129,7 @@ namespace  {
 
 void MainWindow::_hexagonal()
 {
-    double a = 40;
+    const static double a = 80;
 //    double a = _get_hex(get_input_manager().get_total_area(), get_input_manager().get_source_area());
     double h = a * std::sqrt(3);
     double width  = get_input_manager().get_width();

@@ -48,7 +48,10 @@ private:
     void _set_lines_by_edges(const triangulateio& io);
     void _set_triangles(const triangulateio& io);
 
+    QMap<int, QVector<int> > _build_triangle_point_map(const QVector<Triangle> &triangles);
+
     // raw data
+    QVector<QPolygonF>         _sources;
     QVector<QPolygonF>         _holes;
     QVector<QVector<QPointF> > _hexagonals;
 
