@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     _clear_act(nullptr),
     _hexagonal_act(nullptr),
     _cdt_act(nullptr),
-    _accumulation_act(nullptr),
+    _fermat_point_act(nullptr),
     _decompose_act(nullptr),
     _zoom_in_act(nullptr),
     _zoom_out_act(nullptr),
@@ -68,8 +68,8 @@ void MainWindow::_create_actions()
     connect(_hexagonal_act, SIGNAL(triggered(bool)), this, SLOT(_hexagonal()));
     _cdt_act    = new QAction(tr("&CDT"), this);
     connect(_cdt_act, SIGNAL(triggered(bool)), this, SLOT(_cdt()));
-    _accumulation_act = new QAction(tr("&Accumulation"), this);
-    connect(_accumulation_act, SIGNAL(triggered(bool)), this, SLOT(_fermat_point()));
+    _fermat_point_act = new QAction(tr("&Fermat Point"), this);
+    connect(_fermat_point_act, SIGNAL(triggered(bool)), this, SLOT(_fermat_point()));
     _decompose_act    = new QAction(tr("&Decompose"), this);
 
     _zoom_in_act      = new QAction(tr("Zoom in"), this);
@@ -90,7 +90,7 @@ void MainWindow::_create_menus()
     _file_menu->addSeparator();
     _file_menu->addAction(_hexagonal_act);
     _file_menu->addAction(_cdt_act);
-    _file_menu->addAction(_accumulation_act);
+    _file_menu->addAction(_fermat_point_act);
     _file_menu->addAction(_decompose_act);
     _view_menu = menuBar()->addMenu(tr("View"));
     _view_menu->addAction(_dock->toggleViewAction());
@@ -105,7 +105,7 @@ void MainWindow::_connect_panel()
     connect(_panel->get_clear_button(), SIGNAL(clicked(bool)), this, SLOT(_clear()));
     connect(_panel->get_hex_button(), SIGNAL(clicked(bool)), this, SLOT(_hexagonal()));
     connect(_panel->get_cdt_button(), SIGNAL(clicked(bool)), this, SLOT(_cdt()));
-    connect(_panel->get_accumulation_button(), SIGNAL(clicked(bool)), this, SLOT(_fermat_point()));
+    connect(_panel->get_fermat_point_button(), SIGNAL(clicked(bool)), this, SLOT(_fermat_point()));
 }
 
 void MainWindow::_clear()

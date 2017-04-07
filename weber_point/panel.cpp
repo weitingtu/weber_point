@@ -8,7 +8,7 @@ Panel::Panel(QWidget *parent) : QWidget(parent),
     _clear(new QPushButton(tr("&Clear"), this)),
     _hex(new QPushButton(tr("&Hexagonal"), this)),
     _cdt(new QPushButton(tr("C&DT"), this)),
-    _accumulation(new QPushButton(tr("&Accumulation"), this)),
+    _fermat_point(new QPushButton(tr("&Fermat Point"), this)),
     _decompose(new QPushButton(tr("&Decompose"), this))
 {
     QVBoxLayout *vbox = new QVBoxLayout;
@@ -16,7 +16,7 @@ Panel::Panel(QWidget *parent) : QWidget(parent),
     vbox->addWidget(_clear);
     vbox->addWidget(_hex);
     vbox->addWidget(_cdt);
-    vbox->addWidget(_accumulation);
+    vbox->addWidget(_fermat_point);
     vbox->addWidget(_decompose);
     vbox->addStretch(1);
     setLayout(vbox);

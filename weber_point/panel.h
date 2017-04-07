@@ -16,7 +16,7 @@ public:
     QPushButton* get_clear_button() const { return _clear; }
     QPushButton* get_hex_button() const { return _hex; }
     QPushButton* get_cdt_button() const { return _cdt; }
-    QPushButton* get_accumulation_button() const { return _accumulation; }
+    QPushButton* get_fermat_point_button() const { return _fermat_point; }
     QPushButton* get_decompose_button() const { return _decompose; }
 
 signals:
@@ -35,7 +35,7 @@ private:
     QPushButton* _clear;
     QPushButton* _hex;
     QPushButton* _cdt;
-    QPushButton* _accumulation;
+    QPushButton* _fermat_point;
     QPushButton* _decompose;
 };
 
