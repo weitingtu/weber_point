@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     _hexagonal_act(nullptr),
     _cdt_act(nullptr),
     _fermat_point_act(nullptr),
+    _wave_propagate_act(nullptr),
     _decompose_act(nullptr),
     _zoom_in_act(nullptr),
     _zoom_out_act(nullptr),
@@ -70,7 +71,8 @@ void MainWindow::_create_actions()
     connect(_cdt_act, SIGNAL(triggered(bool)), this, SLOT(_cdt()));
     _fermat_point_act = new QAction(tr("&Fermat Point"), this);
     connect(_fermat_point_act, SIGNAL(triggered(bool)), this, SLOT(_fermat_point()));
-    _decompose_act    = new QAction(tr("&Decompose"), this);
+    _wave_propagate_act = new QAction(tr("&Wave Propagate"), this);
+    _decompose_act      = new QAction(tr("&Decompose"), this);
 
     _zoom_in_act      = new QAction(tr("Zoom in"), this);
     _zoom_in_act->setShortcut(tr("Z"));
@@ -91,6 +93,7 @@ void MainWindow::_create_menus()
     _file_menu->addAction(_hexagonal_act);
     _file_menu->addAction(_cdt_act);
     _file_menu->addAction(_fermat_point_act);
+    _file_menu->addAction(_wave_propagate_act);
     _file_menu->addAction(_decompose_act);
     _view_menu = menuBar()->addMenu(tr("View"));
     _view_menu->addAction(_dock->toggleViewAction());

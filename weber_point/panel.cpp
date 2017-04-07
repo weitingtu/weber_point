@@ -9,6 +9,7 @@ Panel::Panel(QWidget *parent) : QWidget(parent),
     _hex(new QPushButton(tr("&Hexagonal"), this)),
     _cdt(new QPushButton(tr("C&DT"), this)),
     _fermat_point(new QPushButton(tr("&Fermat Point"), this)),
+    _wave_propagate(new QPushButton(tr("&Wave Propagate"), this)),
     _decompose(new QPushButton(tr("&Decompose"), this))
 {
     QVBoxLayout *vbox = new QVBoxLayout;
@@ -17,6 +18,7 @@ Panel::Panel(QWidget *parent) : QWidget(parent),
     vbox->addWidget(_hex);
     vbox->addWidget(_cdt);
     vbox->addWidget(_fermat_point);
+    vbox->addWidget(_wave_propagate);
     vbox->addWidget(_decompose);
     vbox->addStretch(1);
     setLayout(vbox);

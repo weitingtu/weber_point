@@ -43,6 +43,7 @@ private:
     QAction*        _hexagonal_act;
     QAction*        _cdt_act;
     QAction*        _fermat_point_act;
+    QAction*        _wave_propagate_act;
     QAction*        _decompose_act;
     QAction*        _zoom_in_act;
     QAction*        _zoom_out_act;
