@@ -2,7 +2,7 @@
 
 Triangle::Triangle() :
     points(),
-    index(),
+    indices(),
     neighbors()
 {
 

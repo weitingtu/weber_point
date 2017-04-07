@@ -1,5 +1,6 @@
 #include "cdtmanager.h"
 #include <QMap>
+#include <QSet>
 
 CDTManager::CDTManager(QObject *parent) : QObject(parent),
     _sources(),
@@ -14,6 +15,8 @@ CDTManager::CDTManager(QObject *parent) : QObject(parent),
     _lines(),
     _triangles(),
     _f_points(),
+    _graph(),
+    _source_idx(-1),
     _f_lines()
 {
 }
@@ -32,6 +35,8 @@ void CDTManager::clear()
     _lines.clear();
     _triangles.clear();
     _f_points.clear();
+    _graph.clear();
+    _source_idx = -1;
     _f_lines.clear();
 }
 
@@ -131,8 +136,8 @@ void CDTManager::_data_to_points()
             _hex_indices[i].push_back(idx);
         }
     }
-    _poly_to_points( _sources, _points, _source_indices, idx );
-    _poly_to_points( _obstacles,   _points, _obstacle_indices,   idx );
+    _poly_to_points( _sources,   _points, _source_indices,   idx );
+    _poly_to_points( _obstacles, _points, _obstacle_indices, idx );
 }
 
 void CDTManager::_points_to_segments()
@@ -251,7 +256,7 @@ void CDTManager::_set_triangles(const triangulateio& io)
             int idx = io.trianglelist[i * io.numberofcorners + j];
 //            t.points[j] = QPointF(io.pointlist[idx * 2], io.pointlist[idx * 2 + 1 ]);
             t.points[j] = _points[idx];
-            t.index[j]  = idx;
+            t.indices[j]  = idx;
         }
 
         for (int j = 0; j < 3; j++)
@@ -262,7 +267,7 @@ void CDTManager::_set_triangles(const triangulateio& io)
     }
 }
 
-QMap<int, QVector<int> > CDTManager::_build_triangle_point_map(const QVector<Triangle>& triangles)
+QMap<int, QVector<int> > CDTManager::_build_triangle_point_map(const QVector<Triangle>& triangles) const
 {
     QMap<int, QVector<int> > map;
     for(int i = 0;i < triangles.size(); ++i)
@@ -270,9 +275,9 @@ QMap<int, QVector<int> > CDTManager::_build_triangle_point_map(const QVector<Tri
         const Triangle& t = triangles[i];
         for(int j = 0; j < 3; ++j)
         {
-            if(t.index[j] >= 0)
+            if(t.indices[j] >= 0)
             {
-                map[t.index[j]].push_back(i);
+                map[t.indices[j]].push_back(i);
             }
         }
     }
@@ -280,39 +285,29 @@ QMap<int, QVector<int> > CDTManager::_build_triangle_point_map(const QVector<Tri
     return map;
 }
 
-void CDTManager::fermat_point()
+QVector<QVector<int>> CDTManager::_build_source_neighbors( const QVector<QVector<int> >& source_indices ) const
 {
     QMap<int, QVector<int> > map = _build_triangle_point_map(_triangles);
 
     QVector<QVector<int>> source_neighbors;
-    source_neighbors.resize(_source_indices.size());
+    source_neighbors.resize(source_indices.size());
 
-    for(int i = 0; i < _source_indices.size(); ++i)
+    for(int i = 0; i < source_indices.size(); ++i)
     {
         QMap<int, int> count;
-        for(int j = 0; j < _source_indices[i].size() - 1; ++j)
+        for(int j = 0; j < source_indices[i].size() - 1; ++j)
         {
-            int idx = _source_indices[i][j];
+            int idx = source_indices[i][j];
             if(!map.contains(idx))
             {
                 continue;
             }
             const QVector<int>& v = map[idx];
-//            printf("%d: ", idx);
             for(int k = 0; k < v.size(); ++k)
             {
                 count[v[k]]++;
-//                printf("%d ", v[k]);
             }
-//            printf("\n");
         }
-
-//        for(int j = 0; j < _hole_indices[i].size() - 1; ++j)
-//        {
-//            int idx = _hole_indices[i][j];
-//            printf("hole idx %d ", idx);
-//        }
-//        printf("\n");
 
         QMap<int, int>::const_iterator ite     = count.constBegin();
         QMap<int, int>::const_iterator ite_end = count.constEnd();
@@ -323,37 +318,88 @@ void CDTManager::fermat_point()
                 continue;
             }
             source_neighbors[i].push_back(ite.key());
-//            const Triangle& t = _triangles[ite.key()];
-//            printf("%d: ", ite.key());
-//            for(int k = 0; k < 3; ++k)
-//            {
-//                printf("%d ", t.index[k]);
-//            }
-//            printf("\n");
+        }
+    }
+    return source_neighbors;
+}
+
+void CDTManager::fermat_point()
+{
+    QVector<QVector<int>> source_neighbors = _build_source_neighbors(_source_indices);
+
+    _graph.clear();
+    _graph.resize(_triangles.size() + _source_indices.size());
+    _source_idx = -1;
+
+    int idx = 0;
+    for( int i = 0; i < _triangles.size(); ++i, ++idx )
+    {
+        const Triangle&t = _triangles[i];
+        for(int j = 0; j < 3; ++j)
+        {
+            _graph[idx].points.push_back(t.points[j]);
+            _graph[idx].indices.push_back(t.indices[j]);
+            _graph[idx].neighbors.push_back(t.neighbors[j]);
+        }
+//        QPointF fermat_point = FermatPoint::CalcFermatPoint(triangles[i]);
+        _graph[idx].center = QPointF((t.points[0].x() + t.points[1].x() + t.points[2].x()) / 3, (t.points[0].y() + t.points[1].y() + t.points[2].y()) / 3);
+    }
+
+    _source_idx = idx;
+
+    for(int i = 0; i < _source_indices.size(); ++i, ++idx)
+    {
+        double x = 0.0;
+        double y = 0.0;
+        for(int j = 0; j < _source_indices[i].size() - 1; ++j)
+        {
+            int index = _source_indices[i][j];
+            _graph[idx].indices.push_back(index);
+            _graph[idx].points.push_back(_points[index]);
+            x += _points[index].x();
+            y += _points[index].y();
+        }
+        x /= ( _source_indices[i].size() - 1 );
+        y /= ( _source_indices[i].size() - 1 );
+        _graph[idx].center = QPointF(x, y);
+
+        for(int j = 0; j < source_neighbors[i].size(); ++j)
+        {
+           _graph[idx] .neighbors.push_back(source_neighbors[i][j]);
         }
     }
 
     _f_points.clear();
-    _f_points.resize(_triangles.size());
-    for(int i = 0; i < _triangles.size(); ++i)
+    _f_points.resize(_graph.size());
+    for(int i = 0; i <_graph.size(); ++i)
     {
-//        QPointF fermat_point = FermatPoint::CalcFermatPoint(triangles[i]);
-        const Triangle& t = _triangles[i];
-        QPointF fermat_point = QPointF((t.points[0].x() + t.points[1].x() + t.points[2].x()) / 3, (t.points[0].y() + t.points[1].y() + t.points[2].y()) / 3);
-        _f_points[i] = fermat_point;
+        _f_points[i] = _graph[i].center;
     }
 
     _f_lines.clear();
-    for(int i = 0; i < _triangles.size(); ++i)
+    QSet<QPair<int, int> > set;
+    for(int i = 0; i < _graph.size(); ++i)
     {
-        const Triangle& t = _triangles[i];
-        for(int j = 0; j < 3; ++j)
+        const Poly& t = _graph[i];
+        for(int j = 0; j < t.neighbors.size(); ++j)
         {
             if(t.neighbors[j] < 0)
             {
                 continue;
             }
-            _f_lines.push_back(QLineF(_f_points[i], _f_points[t.neighbors[j]]));
+            int idx1 = i;
+            int idx2 = t.neighbors[j];
+            if(idx1 > idx2)
+            {
+                std::swap(idx1, idx2);
+            }
+            QPair<int, int> pair(idx1, idx2);
+            if(set.contains(pair))
+            {
+                continue;
+            }
+            set.insert(pair);
+            _f_lines.push_back(QLineF(_f_points[idx1], _f_points[idx2]));
         }
     }
 }

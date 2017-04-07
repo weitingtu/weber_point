@@ -16,6 +16,17 @@
 #include <QLineF>
 #include <QVector>
 
+class Poly
+{
+public:
+    Poly() : center(), points(), indices(), neighbors()
+    {}
+    QPointF          center;
+    QVector<QPointF> points;
+    QVector<int>     indices;
+    QVector<int>     neighbors;
+};
+
 class CDTManager : public QObject
 {
     Q_OBJECT
@@ -54,7 +65,8 @@ private:
     void _set_lines_by_edges(const triangulateio& io);
     void _set_triangles(const triangulateio& io);
 
-    QMap<int, QVector<int> > _build_triangle_point_map(const QVector<Triangle> &triangles);
+    QMap<int, QVector<int> > _build_triangle_point_map(const QVector<Triangle> &triangles) const;
+    QVector<QVector<int>> _build_source_neighbors( const QVector<QVector<int> >&  source_indices ) const;
 
     // raw data
     QVector<QPolygonF>         _sources;
@@ -73,6 +85,8 @@ private:
     QVector<Triangle>          _triangles;
 
     QVector<QPointF>           _f_points;
+    QVector<Poly>              _graph;
+    int                        _source_idx;
     QVector<QLineF>            _f_lines;
 };
 
