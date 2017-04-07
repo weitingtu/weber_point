@@ -203,7 +203,7 @@ void MainWindow::_fermat_point()
     const QVector<QLineF>& lines = get_cdt_manager().get_f_lines();
     for(int i = 0; i < lines.size(); ++i)
     {
-        _scene->addLine(lines[i]);
+        _scene->addLine(lines[i], QPen(QColor(Qt::green)));
     }
 }
 
