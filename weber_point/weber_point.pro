@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     scene.cpp \
     fermatpoint.cpp \
     triangulation.cpp \
-    triangle.cpp
+    triangle.cpp \
+    poly.cpp
 
 HEADERS  += mainwindow.h \
     inputmanager.h \
@@ -30,7 +31,8 @@ HEADERS  += mainwindow.h \
     enum.h \
     fermatpoint.h \
     triangulation.h \
-    triangle.h
+    triangle.h \
+    poly.h
 
 DEFINES += ANSI_DECLARATORS \
     TRILIBRARY

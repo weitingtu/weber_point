@@ -10,22 +10,12 @@
 #include "triangulation.h"
 
 #include "triangle.h"
+#include "poly.h"
 #include <QObject>
 #include <QPolygonF>
 #include <QPointF>
 #include <QLineF>
 #include <QVector>
-
-class Poly
-{
-public:
-    Poly() : center(), points(), indices(), neighbors()
-    {}
-    QPointF          center;
-    QVector<QPointF> points;
-    QVector<int>     indices;
-    QVector<int>     neighbors;
-};
 
 class CDTManager : public QObject
 {
