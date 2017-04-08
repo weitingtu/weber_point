@@ -335,7 +335,10 @@ void CDTManager::fermat_point()
         {
             _graph[idx].points.push_back(t.points[j]);
             _graph[idx].indices.push_back(t.indices[j]);
-            _graph[idx].neighbors.push_back(t.neighbors[j]);
+            if(t.neighbors[j] >= 0)
+            {
+                _graph[idx].neighbors.push_back(t.neighbors[j]);
+            }
         }
 //        QPointF fermat_point = FermatPoint::CalcFermatPoint(triangles[i]);
         _graph[idx].center = QPointF((t.points[0].x() + t.points[1].x() + t.points[2].x()) / 3, (t.points[0].y() + t.points[1].y() + t.points[2].y()) / 3);

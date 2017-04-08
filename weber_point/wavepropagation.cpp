@@ -15,7 +15,7 @@ double WavePropagation::_distance(const QPointF& p1, const QPointF& p2 ) const
     return std::sqrt(x * x + y * y);
 }
 
-void WavePropagation::_bfs(const QVector<Poly>& graph, int source_idx, QVector<double>& weight) const
+void WavePropagation::bfs(const QVector<Poly>& graph, int source_idx, QVector<double>& weight) const
 {
     QQueue<Node>    queue;
     QVector<bool>   visited(graph.size(), false);
@@ -39,7 +39,8 @@ void WavePropagation::_bfs(const QVector<Poly>& graph, int source_idx, QVector<d
             {
                 continue;
             }
-            double w = _distance(p.center, graph[idx].center);
+            visited[idx] = true;
+            double w = _distance(p.center, graph[idx].center) + weight[s.idx];
             queue.push_back(Node(idx, w));
         }
 
@@ -47,11 +48,33 @@ void WavePropagation::_bfs(const QVector<Poly>& graph, int source_idx, QVector<d
     }
 }
 
-void WavePropagation::_bfs()
+void WavePropagation::propagate()
 {
-    for(int i = _source_idx; i < _graph.size(); ++i)
+    QVector<QVector<double> > weights(_graph.size() - _source_idx);
+    int idx = 0;
+    for(int i = _source_idx; i < _graph.size(); ++i, ++idx)
     {
-        QVector<double> weight;
-        _bfs(_graph, i, weight);
+        bfs(_graph, i, weights[idx]);
     }
+
+    QVector<double> total_weight( _source_idx, 0.0);
+    for(int i = 0; i < weights.size(); ++i)
+    {
+        for(int j = 0; j < _source_idx; ++j)
+        {
+            total_weight[j] += weights[i][j];
+        }
+    }
+
+    int point_idx = 0;
+    double min_weight = std::numeric_limits<double>::max();
+    for(int i = 0; i < total_weight.size(); ++i)
+    {
+        if(total_weight[i] < min_weight)
+        {
+            point_idx = i;
+            min_weight = total_weight[i];
+        }
+    }
+    _min_point = _graph[point_idx].center;
 }
