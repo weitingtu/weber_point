@@ -58,10 +58,10 @@ void WavePropagation::propagate()
         bfs(_graph, i, weights[idx]);
     }
 
-    QVector<double> total_weight( _source_idx, 0.0);
+    QVector<double> total_weight( _graph.size(), 0.0);
     for(int i = 0; i < weights.size(); ++i)
     {
-        for(int j = 0; j < _source_idx; ++j)
+        for(int j = 0; j < _graph.size(); ++j)
         {
             total_weight[j] += weights[i][j];
         }
@@ -69,7 +69,7 @@ void WavePropagation::propagate()
 
     int point_idx = -1;
     double min_weight = std::numeric_limits<double>::max();
-    for(int i = 0; i < total_weight.size(); ++i)
+    for(int i = 0; i < _source_idx; ++i)
     {
         if(total_weight[i] < min_weight)
         {
