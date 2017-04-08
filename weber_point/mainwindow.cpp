@@ -197,12 +197,6 @@ void MainWindow::_fermat_point()
     get_cdt_manager().fermat_point();
 
     const QVector<Poly>& graph = get_cdt_manager().get_graph();
-    for(int i = 0; i < graph.size(); ++i)
-    {
-        const QPointF& p = graph[i].center;
-        const double rad = 1;
-        _scene->addEllipse(p.x() - rad, p.y() - rad, rad * 2, rad * 2);
-    }
 
     QSet<QPair<int, int> > set;
     for(int i = 0; i < graph.size(); ++i)
@@ -229,13 +223,28 @@ void MainWindow::_fermat_point()
             _scene->addLine(QLineF(graph[idx1].center, graph[idx2].center), QPen(QColor(Qt::green)));
         }
     }
+
+    int source_idx = get_cdt_manager().get_source_idx();
+    for(int i = 0; i < graph.size(); ++i)
+    {
+        const QPointF& p = graph[i].center;
+        const double rad = 1;
+        if(i >= source_idx)
+        {
+            _scene->addEllipse(p.x() - rad, p.y() - rad, rad * 2, rad * 2, QPen(QColor(Qt::red)));
+        }
+        else
+        {
+            _scene->addEllipse(p.x() - rad, p.y() - rad, rad * 2, rad * 2);
+        }
+    }
 }
 
 void MainWindow::_wave_propagation()
 {
     WavePropagation wp(get_cdt_manager().get_graph(), get_cdt_manager().get_source_idx());
     wp.propagate();
-    const QPointF& p = wp.get_min_point();
+    const QPointF& p = wp.get_min_poly().center;
     const double rad = 3;
     _scene->addEllipse(p.x() - rad, p.y() - rad, rad * 2, rad * 2, QPen(QColor(Qt::red)));
 }

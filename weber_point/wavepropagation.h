@@ -17,7 +17,7 @@ public:
 
     void propagate();
 
-    const QPointF& get_min_point() const { return _min_point; }
+    const Poly& get_min_poly() const { return _graph[_min_idx]; }
 
 private:
 
@@ -26,7 +26,7 @@ private:
 
     QVector<Poly> _graph;
     int           _source_idx;
-    QPointF       _min_point;
+    int           _min_idx;
 };
 
 #endif // WAVEPROPAGATION_H

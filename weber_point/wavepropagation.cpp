@@ -3,7 +3,8 @@
 
 WavePropagation::WavePropagation(const QVector<Poly>& g, int s):
     _graph(g),
-    _source_idx(s)
+    _source_idx(s),
+    _min_idx(-1)
 {
 }
 
@@ -66,7 +67,7 @@ void WavePropagation::propagate()
         }
     }
 
-    int point_idx = 0;
+    int point_idx = -1;
     double min_weight = std::numeric_limits<double>::max();
     for(int i = 0; i < total_weight.size(); ++i)
     {
@@ -76,5 +77,5 @@ void WavePropagation::propagate()
             min_weight = total_weight[i];
         }
     }
-    _min_point = _graph[point_idx].center;
+    _min_idx = point_idx;
 }
