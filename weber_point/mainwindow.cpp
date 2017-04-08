@@ -1,7 +1,8 @@
 #include "mainwindow.h"
 #include "inputmanager.h"
 #include "cdtmanager.h"
-#include "fermatpoint.h"
+//#include "fermatpoint.h"
+#include "wavepropagation.h"
 #include "panel.h"
 #include "scene.h"
 #include <QGraphicsScene>
@@ -72,6 +73,7 @@ void MainWindow::_create_actions()
     _fermat_point_act = new QAction(tr("&Fermat Point"), this);
     connect(_fermat_point_act, SIGNAL(triggered(bool)), this, SLOT(_fermat_point()));
     _wave_propagate_act = new QAction(tr("&Wave Propagate"), this);
+    connect(_wave_propagate_act, SIGNAL(triggered(bool)), this, SLOT(_wave_propagation()));
     _decompose_act      = new QAction(tr("&Decompose"), this);
 
     _zoom_in_act      = new QAction(tr("Zoom in"), this);
@@ -109,6 +111,7 @@ void MainWindow::_connect_panel()
     connect(_panel->get_hex_button(), SIGNAL(clicked(bool)), this, SLOT(_hexagonal()));
     connect(_panel->get_cdt_button(), SIGNAL(clicked(bool)), this, SLOT(_cdt()));
     connect(_panel->get_fermat_point_button(), SIGNAL(clicked(bool)), this, SLOT(_fermat_point()));
+    connect(_panel->get_wave_propagate_button(), SIGNAL(clicked(bool)), this, SLOT(_wave_propagation()));
 }
 
 void MainWindow::_clear()
@@ -205,6 +208,12 @@ void MainWindow::_fermat_point()
     {
         _scene->addLine(lines[i], QPen(QColor(Qt::green)));
     }
+}
+
+void MainWindow::_wave_propagation()
+{
+    WavePropagation wp(get_cdt_manager().get_graph(), get_cdt_manager().get_source_idx());
+    (void) wp;
 }
 
 void MainWindow::_zoom_in()

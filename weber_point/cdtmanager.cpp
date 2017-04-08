@@ -14,10 +14,10 @@ CDTManager::CDTManager(QObject *parent) : QObject(parent),
     _hole_center_points(),
     _lines(),
     _triangles(),
-    _f_points(),
+    _graph_points(),
     _graph(),
     _source_idx(-1),
-    _f_lines()
+    _graph_lines()
 {
 }
 
@@ -34,10 +34,10 @@ void CDTManager::clear()
     _hole_center_points.clear();
     _lines.clear();
     _triangles.clear();
-    _f_points.clear();
+    _graph_points.clear();
     _graph.clear();
     _source_idx = -1;
-    _f_lines.clear();
+    _graph_lines.clear();
 }
 
 void CDTManager::cdt()
@@ -369,14 +369,14 @@ void CDTManager::fermat_point()
         }
     }
 
-    _f_points.clear();
-    _f_points.resize(_graph.size());
+    _graph_points.clear();
+    _graph_points.resize(_graph.size());
     for(int i = 0; i <_graph.size(); ++i)
     {
-        _f_points[i] = _graph[i].center;
+        _graph_points[i] = _graph[i].center;
     }
 
-    _f_lines.clear();
+    _graph_lines.clear();
     QSet<QPair<int, int> > set;
     for(int i = 0; i < _graph.size(); ++i)
     {
@@ -399,7 +399,7 @@ void CDTManager::fermat_point()
                 continue;
             }
             set.insert(pair);
-            _f_lines.push_back(QLineF(_f_points[idx1], _f_points[idx2]));
+            _graph_lines.push_back(QLineF(_graph_points[idx1], _graph_points[idx2]));
         }
     }
 }

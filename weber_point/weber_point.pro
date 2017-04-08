@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     fermatpoint.cpp \
     triangulation.cpp \
     triangle.cpp \
-    poly.cpp
+    poly.cpp \
+    wavepropagation.cpp
 
 HEADERS  += mainwindow.h \
     inputmanager.h \
@@ -32,7 +33,8 @@ HEADERS  += mainwindow.h \
     fermatpoint.h \
     triangulation.h \
     triangle.h \
-    poly.h
+    poly.h \
+    wavepropagation.h
 
 DEFINES += ANSI_DECLARATORS \
     TRILIBRARY

@@ -38,8 +38,10 @@ public:
     const QVector<QLineF>&   get_lines() const { return _lines; }
     const QVector<Triangle>& get_triangles() const { return _triangles; }
 
-    const QVector<QPointF>&  get_f_points() const { return _f_points; }
-    const QVector<QLineF>&   get_f_lines() const { return _f_lines; }
+    const QVector<QPointF>&  get_f_points() const { return _graph_points; }
+    const QVector<QLineF>&   get_f_lines() const { return _graph_lines; }
+    const QVector<Poly>&     get_graph() const { return _graph; }
+    int get_source_idx() const { return _source_idx; }
 signals:
 
 public slots:
@@ -74,10 +76,10 @@ private:
     QVector<QLineF>            _lines;
     QVector<Triangle>          _triangles;
 
-    QVector<QPointF>           _f_points;
+    QVector<QPointF>           _graph_points;
     QVector<Poly>              _graph;
     int                        _source_idx;
-    QVector<QLineF>            _f_lines;
+    QVector<QLineF>            _graph_lines;
 };
 
 inline CDTManager& get_cdt_manager()
