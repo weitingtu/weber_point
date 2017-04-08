@@ -14,10 +14,8 @@ CDTManager::CDTManager(QObject *parent) : QObject(parent),
     _hole_center_points(),
     _lines(),
     _triangles(),
-    _graph_points(),
     _graph(),
-    _source_idx(-1),
-    _graph_lines()
+    _source_idx(-1)
 {
 }
 
@@ -34,10 +32,8 @@ void CDTManager::clear()
     _hole_center_points.clear();
     _lines.clear();
     _triangles.clear();
-    _graph_points.clear();
     _graph.clear();
     _source_idx = -1;
-    _graph_lines.clear();
 }
 
 void CDTManager::cdt()
@@ -366,40 +362,6 @@ void CDTManager::fermat_point()
         for(int j = 0; j < source_neighbors[i].size(); ++j)
         {
            _graph[idx] .neighbors.push_back(source_neighbors[i][j]);
-        }
-    }
-
-    _graph_points.clear();
-    _graph_points.resize(_graph.size());
-    for(int i = 0; i <_graph.size(); ++i)
-    {
-        _graph_points[i] = _graph[i].center;
-    }
-
-    _graph_lines.clear();
-    QSet<QPair<int, int> > set;
-    for(int i = 0; i < _graph.size(); ++i)
-    {
-        const Poly& t = _graph[i];
-        for(int j = 0; j < t.neighbors.size(); ++j)
-        {
-            if(t.neighbors[j] < 0)
-            {
-                continue;
-            }
-            int idx1 = i;
-            int idx2 = t.neighbors[j];
-            if(idx1 > idx2)
-            {
-                std::swap(idx1, idx2);
-            }
-            QPair<int, int> pair(idx1, idx2);
-            if(set.contains(pair))
-            {
-                continue;
-            }
-            set.insert(pair);
-            _graph_lines.push_back(QLineF(_graph_points[idx1], _graph_points[idx2]));
         }
     }
 }

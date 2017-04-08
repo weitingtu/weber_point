@@ -195,18 +195,39 @@ void MainWindow::_cdt()
 void MainWindow::_fermat_point()
 {
     get_cdt_manager().fermat_point();
-    const QVector<QPointF>& points = get_cdt_manager().get_f_points();
-    for(int i = 0; i < points.size(); ++i)
+
+    const QVector<Poly>& graph = get_cdt_manager().get_graph();
+    for(int i = 0; i < graph.size(); ++i)
     {
-        const QPointF& p = points[i];
+        const QPointF& p = graph[i].center;
         const double rad = 1;
         _scene->addEllipse(p.x() - rad, p.y() - rad, rad * 2, rad * 2);
     }
 
-    const QVector<QLineF>& lines = get_cdt_manager().get_f_lines();
-    for(int i = 0; i < lines.size(); ++i)
+    QSet<QPair<int, int> > set;
+    for(int i = 0; i < graph.size(); ++i)
     {
-        _scene->addLine(lines[i], QPen(QColor(Qt::green)));
+        const Poly& p = graph[i];
+        for(int j = 0; j < p.neighbors.size(); ++j)
+        {
+            if(p.neighbors[j] < 0)
+            {
+                continue;
+            }
+            int idx1 = i;
+            int idx2 = p.neighbors[j];
+            if(idx1 > idx2)
+            {
+                std::swap(idx1, idx2);
+            }
+            QPair<int, int> pair(idx1, idx2);
+            if(set.contains(pair))
+            {
+                continue;
+            }
+            set.insert(pair);
+            _scene->addLine(QLineF(graph[idx1].center, graph[idx2].center), QPen(QColor(Qt::green)));
+        }
     }
 }
 
