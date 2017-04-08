@@ -244,9 +244,15 @@ void MainWindow::_wave_propagation()
 {
     WavePropagation wp(get_cdt_manager().get_graph(), get_cdt_manager().get_source_idx());
     wp.propagate();
-    const QPointF& p = wp.get_min_poly().center;
+    const Poly& p = wp.get_min_poly();
     const double rad = 3;
-    _scene->addEllipse(p.x() - rad, p.y() - rad, rad * 2, rad * 2, QPen(QColor(Qt::red)));
+    _scene->addEllipse(p.center.x() - rad, p.center.y() - rad, rad * 2, rad * 2, QPen(QColor(Qt::red)));
+
+    for(int i = 0; i < p.points.size() - 1; ++i)
+    {
+        _scene->addLine(QLineF(p.points[i], p.points[i+1]), QPen(QColor(Qt::red)));
+    }
+    _scene->addLine(QLineF(p.points.back(), p.points.front()), QPen(QColor(Qt::red)));
 }
 
 void MainWindow::_zoom_in()
