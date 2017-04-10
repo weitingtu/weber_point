@@ -2,6 +2,7 @@
 #include <QGroupBox>
 #include <QRadioButton>
 #include <QPushButton>
+#include <QComboBox>
 #include <QVBoxLayout>
 
 Panel::Panel(QWidget *parent) : QWidget(parent),
@@ -10,8 +11,11 @@ Panel::Panel(QWidget *parent) : QWidget(parent),
     _cdt(new QPushButton(tr("C&DT"), this)),
     _fermat_point(new QPushButton(tr("&Fermat Point"), this)),
     _wave_propagate(new QPushButton(tr("&Wave Propagate"), this)),
-    _decompose(new QPushButton(tr("&Decompose"), this))
+    _decompose(new QPushButton(tr("&Decompose"), this)),
+    _box(new QComboBox(this))
 {
+    connect(_box, SIGNAL(activated(int)), this, SIGNAL(activated(int)));
+
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(_createSourceObstacleGroup());
     vbox->addWidget(_clear);
@@ -20,8 +24,11 @@ Panel::Panel(QWidget *parent) : QWidget(parent),
     vbox->addWidget(_fermat_point);
     vbox->addWidget(_wave_propagate);
     vbox->addWidget(_decompose);
+    vbox->addWidget(_box);
     vbox->addStretch(1);
     setLayout(vbox);
+
+    clear();
 }
 
 QGroupBox* Panel::_createSourceObstacleGroup()
@@ -49,6 +56,25 @@ QGroupBox* Panel::_createSourceObstacleGroup()
     groupBox->setLayout(vbox);
 
     return groupBox;
+}
+
+void Panel::set_source_number(int s)
+{
+    clear();
+    for(int i = 0; i < s; ++i)
+    {
+        _box->addItem(QString("Source %1").arg(QString::number(i)));
+    }
+    if(s > 0)
+    {
+        _box->addItem("Total");
+    }
+}
+
+void Panel::clear()
+{
+    _box->clear();
+    _box->addItem("None");
 }
 
 void Panel::_create_source_rect( bool checked ) const

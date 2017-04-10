@@ -111,11 +111,13 @@ void MainWindow::_connect_panel()
     connect(_panel->get_cdt_button(), SIGNAL(clicked(bool)), this, SLOT(_cdt()));
     connect(_panel->get_fermat_point_button(), SIGNAL(clicked(bool)), this, SLOT(_fermat_point()));
     connect(_panel->get_wave_propagate_button(), SIGNAL(clicked(bool)), this, SLOT(_wave_propagation()));
+    connect(_panel, SIGNAL(activated(int)), this, SLOT(_show_weight(int)));
 }
 
 void MainWindow::_clear()
 {
     _scene->clear();
+    _panel->clear();
     get_input_manager().clear();
     get_cdt_manager().clear();
     _scene->initialize();
@@ -241,6 +243,7 @@ void MainWindow::_fermat_point()
 
 void MainWindow::_wave_propagation()
 {
+    _panel->set_source_number(get_cdt_manager().get_graph().size() - get_cdt_manager().get_source_idx() );
     WavePropagation wp(get_cdt_manager().get_graph(), get_cdt_manager().get_source_idx());
     wp.propagate();
 
@@ -263,6 +266,11 @@ void MainWindow::_wave_propagation()
         _scene->addLine(QLineF(p.points[i], p.points[i+1]), QPen(QColor(Qt::red)));
     }
     _scene->addLine(QLineF(p.points.back(), p.points.front()), QPen(QColor(Qt::red)));
+}
+
+void MainWindow::_show_weight(int index)
+{
+    (void) index;
 }
 
 void MainWindow::_zoom_in()

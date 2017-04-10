@@ -6,6 +6,7 @@
 
 class QGroupBox;
 class QPushButton;
+class QComboBox;
 
 class Panel : public QWidget
 {
@@ -19,9 +20,12 @@ public:
     QPushButton* get_fermat_point_button() const { return _fermat_point; }
     QPushButton* get_wave_propagate_button() const { return _wave_propagate; }
     QPushButton* get_decompose_button() const { return _decompose; }
+    void set_source_number(int s);
+    void clear();
 
 signals:
     void mode_changed(MODE m) const;
+    void activated(int index) const;
 
 public slots:
 private slots:
@@ -39,6 +43,7 @@ private:
     QPushButton* _fermat_point;
     QPushButton* _wave_propagate;
     QPushButton* _decompose;
+    QComboBox*   _box;
 };
 
 #endif // PANEL_H
