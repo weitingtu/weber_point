@@ -20,7 +20,7 @@ public:
     void set_height(double height) { _height = height; }
     void add_source(const QPolygonF& p) { _sources.push_back(p); }
     void add_obstacle(const QPolygonF& p) { _obstacles.push_back(p); }
-    void clear() { _sources.clear(); _obstacles.clear(); }
+    void clear();
 
     double get_width() const { return _width; }
     double get_height() const { return _height; }

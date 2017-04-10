@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "inputmanager.h"
 #include "cdtmanager.h"
-//#include "fermatpoint.h"
 #include "wavepropagation.h"
 #include "panel.h"
 #include "scene.h"

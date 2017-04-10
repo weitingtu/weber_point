@@ -1,11 +1,22 @@
 #include "inputmanager.h"
 
+static const int _default_width(600);
+static const int _default_height(300);
+
 InputManager::InputManager(QObject *parent) : QObject(parent),
-    _width(600),
-    _height(300),
+    _width(_default_width),
+    _height(_default_height),
     _sources(),
     _obstacles()
 {
+}
+
+void InputManager::clear()
+{
+    _width  = _default_width;
+    _height = _default_height;
+    _sources.clear();
+    _obstacles.clear();
 }
 
 bool InputManager::is_blocked(const QPointF& point) const
