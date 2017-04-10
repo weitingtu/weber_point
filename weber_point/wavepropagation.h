@@ -3,13 +3,6 @@
 
 #include "poly.h"
 
-struct Node
-{
-    Node(int i, double w) : idx(i), weight(w) {}
-    int idx;
-    double weight;
-};
-
 class WavePropagation
 {
 public:

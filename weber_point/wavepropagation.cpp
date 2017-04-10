@@ -20,31 +20,38 @@ double WavePropagation::_distance(const QPointF& p1, const QPointF& p2 ) const
 
 void WavePropagation::bfs(const QVector<Poly>& graph, int source_idx, QVector<double>& weight) const
 {
-    QQueue<Node>    queue;
-    QVector<bool>   visited(graph.size(), false);
+    QQueue<int>     queue;
+    QVector<bool>   popped(graph.size(), false);
+    QVector<bool>   pushed(graph.size(), false);
     weight.clear();
     weight.resize(graph.size());
     weight.fill(0.0);
 
-    visited[source_idx] = true;
-    queue.push_back(Node(source_idx, 0));
+    pushed[source_idx] = true;
+    weight[source_idx]  = 0.0;
+    queue.push_back(source_idx);
 
     while(!queue.empty())
     {
-        const Node& s = queue.front();
-        weight[s.idx] = s.weight;
+        int s = queue.front();
+        popped[s] = true;
 
-        const Poly& p = graph[s.idx];
+        const Poly& p = graph[s];
         for(int i = 0; i < p.neighbors.size(); ++i)
         {
             int idx = p.neighbors[i];
-            if(visited[idx])
+            double w = _distance(p.center, graph[idx].center) + weight[s];
+            if(pushed[idx])
             {
+                if(!popped[idx] && weight[idx] > w)
+                {
+                    weight[idx] = w;
+                }
                 continue;
             }
-            visited[idx] = true;
-            double w = _distance(p.center, graph[idx].center) + weight[s.idx];
-            queue.push_back(Node(idx, w));
+            pushed[idx] = true;
+            weight[idx] = w;
+            queue.push_back(idx);
         }
 
         queue.pop_front();
