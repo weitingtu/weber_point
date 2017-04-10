@@ -244,6 +244,17 @@ void MainWindow::_wave_propagation()
 {
     WavePropagation wp(get_cdt_manager().get_graph(), get_cdt_manager().get_source_idx());
     wp.propagate();
+
+    const QVector<QVector<double> >& weights = wp.get_weights();
+    const QVector<double>&           total_weight = wp.get_total_weight();
+    (void) total_weight;
+
+    for(int i = 0; i < weights.size(); ++i)
+    {
+
+    }
+
+
     const Poly& p = wp.get_min_poly();
     const double rad = 3;
     _scene->addEllipse(p.center.x() - rad, p.center.y() - rad, rad * 2, rad * 2, QPen(QColor(Qt::red)));

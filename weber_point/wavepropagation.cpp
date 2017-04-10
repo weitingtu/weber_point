@@ -4,7 +4,9 @@
 WavePropagation::WavePropagation(const QVector<Poly>& g, int s):
     _graph(g),
     _source_idx(s),
-    _min_idx(-1)
+    _min_idx(-1),
+    _weights(),
+    _total_weight()
 {
 }
 
@@ -52,6 +54,9 @@ void WavePropagation::bfs(const QVector<Poly>& graph, int source_idx, QVector<do
 void WavePropagation::propagate()
 {
     QVector<QVector<double> > weights(_graph.size() - _source_idx);
+//    _weights.clear();
+//    _weights.resize(_graph.size() - _source_idx);
+//    QVector<QVector<double> >& weights = _weights;
     int idx = 0;
     for(int i = _source_idx; i < _graph.size(); ++i, ++idx)
     {
@@ -59,6 +64,10 @@ void WavePropagation::propagate()
     }
 
     QVector<double> total_weight( _graph.size(), 0.0);
+//    _total_weight.clear();
+//    _total_weight.resize( _graph.size());
+//    _total_weight.fill(0.0);
+//    QVector<double>& total_weight = _total_weight;
     for(int i = 0; i < weights.size(); ++i)
     {
         for(int j = 0; j < _graph.size(); ++j)
