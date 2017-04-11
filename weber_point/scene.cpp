@@ -1,13 +1,33 @@
 #include "scene.h"
 #include "inputmanager.h"
+#include "poly.h"
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsTextItem>
 
 Scene::Scene(QObject *parent ):
     QGraphicsScene(parent),
     _mode(MODE::CREATE_SOURCE_RECT),
-    _points()
+    _points(),
+    _texts()
 {
     initialize();
+}
+
+void Scene::add_text(const QPointF& p, const QString& text)
+{
+    QGraphicsTextItem* text_item = addText(text);
+    text_item->setX(p.x());
+    text_item->setY(p.y());
+    _texts.push_back(text_item);
+}
+
+void Scene::clear_texts()
+{
+    for(int i = 0; i < _texts.size(); ++i)
+    {
+        removeItem(_texts[i]);
+    }
+    _texts.clear();
 }
 
 void Scene::initialize()

@@ -10,6 +10,7 @@ class QAction;
 class QGraphicsScene;
 class QGraphicsView;
 class QDockWdiget;
+class Poly;
 
 class MainWindow : public QMainWindow
 {
@@ -38,6 +39,7 @@ private:
     void _create_actions();
     void _create_menus();
     void _connect_panel();
+    void _show_weight(const QVector<Poly>& graph, const QVector<double>& weight);
 
     QMenu*          _file_menu;
     QMenu*          _view_menu;

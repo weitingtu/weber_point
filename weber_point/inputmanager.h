@@ -14,7 +14,6 @@ public:
         static InputManager inst;
         return inst;
     }
-    explicit InputManager(QObject *parent = 0);
 
     void set_width(double width) { _width = width; }
     void set_height(double height) { _height = height; }
@@ -33,6 +32,8 @@ signals:
 
 public slots:
 private:
+    explicit InputManager(QObject *parent = 0);
+
     double _width;
     double _height;
     QVector<QPolygonF> _sources;

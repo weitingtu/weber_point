@@ -26,7 +26,6 @@ public:
         static CDTManager inst;
         return inst;
     }
-    explicit CDTManager(QObject *parent = 0);
 
     void add_sources(const QVector<QPolygonF>& sources) { _sources += sources; }
     void add_obstacles(const QVector<QPolygonF>& obstacles) { _obstacles += obstacles; }
@@ -44,6 +43,8 @@ signals:
 
 public slots:
 private:
+    explicit CDTManager(QObject *parent = 0);
+
     void _data_to_hole_center_points(const QVector<QPolygonF>& poly);
     void _data_to_hole_center_points();
     void _poly_to_points(const QVector<QPolygonF>& poly, QVector<QPointF> &points, QVector<QVector<int> >& indices , int &idx);

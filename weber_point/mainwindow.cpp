@@ -120,6 +120,7 @@ void MainWindow::_clear()
     _panel->clear();
     get_input_manager().clear();
     get_cdt_manager().clear();
+    get_wave_propagate().clear();
     _scene->initialize();
 }
 
@@ -244,20 +245,12 @@ void MainWindow::_fermat_point()
 void MainWindow::_wave_propagation()
 {
     _panel->set_source_number(get_cdt_manager().get_graph().size() - get_cdt_manager().get_source_idx() );
-    WavePropagation wp(get_cdt_manager().get_graph(), get_cdt_manager().get_source_idx());
-    wp.propagate();
 
-    const QVector<QVector<double> >& weights = wp.get_weights();
-    const QVector<double>&           total_weight = wp.get_total_weight();
-    (void) total_weight;
+    get_wave_propagate().propagate(get_cdt_manager().get_graph(), get_cdt_manager().get_source_idx());
 
-    for(int i = 0; i < weights.size(); ++i)
-    {
+//    _show_weight(get_cdt_manager().get_graph(), get_wave_propagate().get_total_weight());
 
-    }
-
-
-    const Poly& p = wp.get_min_poly();
+    const Poly& p = get_wave_propagate().get_min_poly();
     const double rad = 3;
     _scene->addEllipse(p.center.x() - rad, p.center.y() - rad, rad * 2, rad * 2, QPen(QColor(Qt::red)));
 
@@ -268,9 +261,45 @@ void MainWindow::_wave_propagation()
     _scene->addLine(QLineF(p.points.back(), p.points.front()), QPen(QColor(Qt::red)));
 }
 
+void MainWindow::_show_weight(const QVector<Poly>& graph, const QVector<double>& weight)
+{
+    _scene->clear_texts();
+
+    if(weight.empty())
+    {
+        return;
+    }
+
+    for(int i = 0; i < graph.size(); ++i)
+    {
+        _scene->add_text(graph[i].center, QString::number(weight[i]));
+    }
+}
+
 void MainWindow::_show_weight(int index)
 {
-    (void) index;
+    if(index <= 0)
+    {
+        _show_weight(QVector<Poly>(), QVector<double>());
+        return;
+    }
+
+    int source_idx  = index - 1;
+    int source_size = get_cdt_manager().get_graph().size() - get_cdt_manager().get_source_idx();
+
+    if(get_wave_propagate().get_weights().empty())
+    {
+        return;
+    }
+
+    if(source_size == source_idx)
+    {
+        _show_weight(get_cdt_manager().get_graph(), get_wave_propagate().get_total_weight());
+    }
+    else
+    {
+        _show_weight(get_cdt_manager().get_graph(), get_wave_propagate().get_weights()[source_idx]);
+    }
 }
 
 void MainWindow::_zoom_in()

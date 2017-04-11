@@ -12,6 +12,9 @@ class Scene : public QGraphicsScene
 public:
     explicit Scene(QObject*parent = 0);
 
+    void add_text(const QPointF& p, const QString& text);
+    void clear_texts();
+
 signals:
 
 public slots:
@@ -22,7 +25,8 @@ protected:
 
 private:
     MODE _mode;
-    QVector<QPointF> _points;
+    QVector<QPointF>           _points;
+    QVector<QGraphicsTextItem*> _texts;
 };
 
 #endif // SCENE_H
