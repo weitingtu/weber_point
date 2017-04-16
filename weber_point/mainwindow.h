@@ -30,6 +30,7 @@ private slots:
     void _fermat_point();
     void _wave_propagation();
     void _show_weight(int index);
+    void _decompose();
     void _zoom_in();
     void _zoom_out();
     void _zoom_fit();

@@ -2,6 +2,7 @@
 #include "inputmanager.h"
 #include "cdtmanager.h"
 #include "wavepropagation.h"
+#include "decomposition.h"
 #include "panel.h"
 #include "scene.h"
 #include <QGraphicsScene>
@@ -74,6 +75,7 @@ void MainWindow::_create_actions()
     _wave_propagate_act = new QAction(tr("&Wave Propagate"), this);
     connect(_wave_propagate_act, SIGNAL(triggered(bool)), this, SLOT(_wave_propagation()));
     _decompose_act      = new QAction(tr("&Decompose"), this);
+    connect(_decompose_act, SIGNAL(triggered(bool)), this, SLOT(_decompose()));
 
     _zoom_in_act      = new QAction(tr("Zoom in"), this);
     _zoom_in_act->setShortcut(tr("Z"));
@@ -111,6 +113,7 @@ void MainWindow::_connect_panel()
     connect(_panel->get_cdt_button(), SIGNAL(clicked(bool)), this, SLOT(_cdt()));
     connect(_panel->get_fermat_point_button(), SIGNAL(clicked(bool)), this, SLOT(_fermat_point()));
     connect(_panel->get_wave_propagate_button(), SIGNAL(clicked(bool)), this, SLOT(_wave_propagation()));
+    connect(_panel->get_decompose_button(), SIGNAL(clicked(bool)), this, SLOT(_decompose()));
     connect(_panel, SIGNAL(activated(int)), this, SLOT(_show_weight(int)));
 }
 
@@ -317,6 +320,31 @@ void MainWindow::_show_weight(int index)
     else
     {
         _show_weight(get_cdt_manager().get_graph(), get_wave_propagate().get_weights()[source_idx]);
+    }
+}
+
+void MainWindow::_decompose()
+{
+    int idx = get_wave_propagate().get_min_poly_idx();
+    if(-1 == idx)
+    {
+        return;
+    }
+    const Poly& p = get_cdt_manager().get_graph()[idx];
+    QVector<QPointF> neighbors;
+    for(int i = 0 ; i < p.neighbors.size(); ++i)
+    {
+        neighbors.push_back(get_cdt_manager().get_graph()[p.neighbors[i]].center);
+    }
+
+    Decomposition d(p, neighbors);
+    d.decompose();
+
+    const QVector<QPointF>& centers = d.get_centers();
+    for(int i = 0; i < centers.size(); ++i)
+    {
+        const double rad = 3;
+        _scene->addEllipse(centers[i].x() - rad, centers[i].y() - rad, rad * 2, rad * 2, QPen(QColor(Qt::red)));
     }
 }
 
