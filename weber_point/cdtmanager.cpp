@@ -281,10 +281,8 @@ QMap<int, QVector<int> > CDTManager::_build_triangle_point_map(const QVector<Tri
     return map;
 }
 
-QVector<QVector<int>> CDTManager::_build_source_neighbors( const QVector<QVector<int> >& source_indices ) const
+QVector<QVector<int>> CDTManager::_build_poly_neighbors( const QMap<int, QVector<int> >& map ,const QVector<QVector<int> >& source_indices ) const
 {
-    QMap<int, QVector<int> > map = _build_triangle_point_map(_triangles);
-
     QVector<QVector<int>> source_neighbors;
     source_neighbors.resize(source_indices.size());
 
@@ -321,7 +319,8 @@ QVector<QVector<int>> CDTManager::_build_source_neighbors( const QVector<QVector
 
 void CDTManager::fermat_point()
 {
-    QVector<QVector<int>> source_neighbors = _build_source_neighbors(_source_indices);
+    QMap<int, QVector<int> > triangle_point_map = _build_triangle_point_map(_triangles);
+    QVector<QVector<int>> source_neighbors = _build_poly_neighbors(triangle_point_map, _source_indices);
 
     _graph.clear();
     _graph.resize(_triangles.size() + _source_indices.size());
