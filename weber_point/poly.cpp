@@ -11,3 +11,11 @@ bool Poly::is_neighbor(int idx) const
     }
     return false;
 }
+
+void Poly::clear()
+{
+    center = QPointF(0, 0);
+    points.clear();
+    indices.clear();
+    neighbors.clear();
+}

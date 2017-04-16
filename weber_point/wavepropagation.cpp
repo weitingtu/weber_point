@@ -2,8 +2,7 @@
 #include <QQueue>
 
 WavePropagation::WavePropagation():
-    _graph(),
-    _min_idx(-1),
+    _min_poly(),
     _weights(),
     _total_weight()
 {
@@ -59,7 +58,7 @@ void WavePropagation::bfs(const QVector<Poly>& graph, int source_idx, QVector<do
 
 void WavePropagation::propagate(const QVector<Poly>& g, const QVector<Poly>& sg)
 {
-    _graph = g + sg;
+    QVector<Poly> graph = g + sg;
     int source_idx = g.size();
 
     QVector<QVector<double> >& weights = _weights;
@@ -67,19 +66,19 @@ void WavePropagation::propagate(const QVector<Poly>& g, const QVector<Poly>& sg)
     weights.resize(sg.size());
 
     int idx = 0;
-    for(int i = source_idx; i < _graph.size(); ++i, ++idx)
+    for(int i = source_idx; i < graph.size(); ++i, ++idx)
     {
-        bfs(_graph, i, weights[idx]);
+        bfs(graph, i, weights[idx]);
     }
 
     QVector<double>& total_weight = _total_weight;
     total_weight.clear();
-    total_weight.resize( _graph.size());
+    total_weight.resize( graph.size());
     total_weight.fill(0.0);
 
     for(int i = 0; i < weights.size(); ++i)
     {
-        for(int j = 0; j < _graph.size(); ++j)
+        for(int j = 0; j < graph.size(); ++j)
         {
             total_weight[j] += weights[i][j] *weights[i][j];
         }
@@ -100,13 +99,12 @@ void WavePropagation::propagate(const QVector<Poly>& g, const QVector<Poly>& sg)
     {
         total_weight[i] = sqrt(total_weight[i]);
     }
-    _min_idx = point_idx;
+    _min_poly = graph[point_idx];
 }
 
 void WavePropagation::clear()
 {
-    _graph.clear();
-    _min_idx    = -1;
+    _min_poly.clear();
     _weights.clear();
     _total_weight.clear();
 }

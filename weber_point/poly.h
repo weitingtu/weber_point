@@ -15,6 +15,7 @@ public:
     QVector<int>     neighbors;
 
     bool is_neighbor(int idx) const;
+    void clear();
 };
 
 
