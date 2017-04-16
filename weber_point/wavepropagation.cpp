@@ -89,7 +89,7 @@ void WavePropagation::propagate(const QVector<Poly>& g, int s)
     {
         for(int j = 0; j < _graph.size(); ++j)
         {
-            total_weight[j] += weights[i][j];
+            total_weight[j] += weights[i][j] *weights[i][j];
         }
     }
 
@@ -102,6 +102,11 @@ void WavePropagation::propagate(const QVector<Poly>& g, int s)
             point_idx = i;
             min_weight = total_weight[i];
         }
+    }
+
+    for(int i = 0; i < total_weight.size(); ++i)
+    {
+        total_weight[i] = sqrt(total_weight[i]);
     }
     _min_idx = point_idx;
 }
