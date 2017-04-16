@@ -15,7 +15,7 @@ public:
     void propagate(const QVector<Poly>& g, const QVector<Poly> &sg );
     void clear();
 
-    const Poly& get_min_poly() const { return _min_poly; }
+    int get_min_poly_idx() const { return _min_poly_idx; }
 
     const QVector<QVector<double> >& get_weights() const { return _weights; }
     const QVector<double>&           get_total_weight() const { return _total_weight; }
@@ -26,7 +26,7 @@ private:
     double _distance(const QPointF& p1, const QPointF& p2 ) const;
     void bfs(const QVector<Poly>& graph, int source_idx, QVector<double>& weight) const;
 
-    Poly                      _min_poly;
+    int                       _min_poly_idx;
     QVector<QVector<double> > _weights;
     QVector<double>           _total_weight;
 };

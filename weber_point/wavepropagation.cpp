@@ -2,7 +2,7 @@
 #include <QQueue>
 
 WavePropagation::WavePropagation():
-    _min_poly(),
+    _min_poly_idx(-1),
     _weights(),
     _total_weight()
 {
@@ -99,12 +99,12 @@ void WavePropagation::propagate(const QVector<Poly>& g, const QVector<Poly>& sg)
     {
         total_weight[i] = sqrt(total_weight[i]);
     }
-    _min_poly = graph[point_idx];
+    _min_poly_idx = point_idx;
 }
 
 void WavePropagation::clear()
 {
-    _min_poly.clear();
+    _min_poly_idx = -1;
     _weights.clear();
     _total_weight.clear();
 }

@@ -226,21 +226,6 @@ void MainWindow::_fermat_point()
         }
     }
 
-//    int source_idx = get_cdt_manager().get_source_idx();
-//    for(int i = 0; i < graph.size(); ++i)
-//    {
-//        const QPointF& p = graph[i].center;
-//        const double rad = 1;
-//        if(i >= source_idx)
-//        {
-//            _scene->addEllipse(p.x() - rad, p.y() - rad, rad * 2, rad * 2, QPen(QColor(Qt::red)));
-//        }
-//        else
-//        {
-//            _scene->addEllipse(p.x() - rad, p.y() - rad, rad * 2, rad * 2);
-//        }
-//    }
-
     const QVector<Poly>& source_graph = get_cdt_manager().get_source_graph();
 
     for(int i = 0; i < source_graph.size(); ++i)
@@ -278,7 +263,12 @@ void MainWindow::_wave_propagation()
 
     get_wave_propagate().propagate(get_cdt_manager().get_graph(), get_cdt_manager().get_source_graph());
 
-    const Poly& p = get_wave_propagate().get_min_poly();
+    int idx = get_wave_propagate().get_min_poly_idx();
+    if(-1 == idx)
+    {
+        return;
+    }
+    const Poly& p = get_cdt_manager().get_graph()[idx];
     const double rad = 3;
     _scene->addEllipse(p.center.x() - rad, p.center.y() - rad, rad * 2, rad * 2, QPen(QColor(Qt::red)));
 
@@ -313,7 +303,6 @@ void MainWindow::_show_weight(int index)
     }
 
     int source_idx  = index - 1;
-//    int source_size = get_cdt_manager().get_graph().size() - get_cdt_manager().get_source_idx();
     int source_size = get_cdt_manager().get_source_graph().size();
 
     if(get_wave_propagate().get_weights().empty())
