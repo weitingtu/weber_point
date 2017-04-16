@@ -15,7 +15,7 @@ CDTManager::CDTManager(QObject *parent) : QObject(parent),
     _lines(),
     _triangles(),
     _graph(),
-    _source_idx(-1)
+    _source_graph()
 {
 }
 
@@ -33,7 +33,7 @@ void CDTManager::clear()
     _lines.clear();
     _triangles.clear();
     _graph.clear();
-    _source_idx = -1;
+    _source_graph.clear();
 }
 
 void CDTManager::cdt()
@@ -322,8 +322,7 @@ void CDTManager::fermat_point()
     QMap<int, QVector<int> > triangle_point_map = _build_triangle_point_map(_triangles);
 
     _graph.clear();
-    _graph.resize(_triangles.size() + _source_indices.size());
-    _source_idx = -1;
+    _graph.resize(_triangles.size());
 
     int idx = 0;
     for( int i = 0; i < _triangles.size(); ++i, ++idx )
@@ -343,7 +342,8 @@ void CDTManager::fermat_point()
     }
 
     QVector<QVector<int>> source_neighbor_triangles = _build_poly_neighbor_triangles(triangle_point_map, _source_indices);
-    _source_idx = idx;
+    _source_graph.clear();
+    _source_graph.resize(_source_indices.size());
 
     for(int i = 0; i < _source_indices.size(); ++i, ++idx)
     {
@@ -352,18 +352,18 @@ void CDTManager::fermat_point()
         for(int j = 0; j < _source_indices[i].size() - 1; ++j)
         {
             int index = _source_indices[i][j];
-            _graph[idx].indices.push_back(index);
-            _graph[idx].points.push_back(_points[index]);
+            _source_graph[i].indices.push_back(index);
+            _source_graph[i].points.push_back(_points[index]);
             x += _points[index].x();
             y += _points[index].y();
         }
         x /= ( _source_indices[i].size() - 1 );
         y /= ( _source_indices[i].size() - 1 );
-        _graph[idx].center = QPointF(x, y);
+        _source_graph[i].center = QPointF(x, y);
 
         for(int j = 0; j < source_neighbor_triangles[i].size(); ++j)
         {
-           _graph[idx] .neighbors.push_back(source_neighbor_triangles[i][j]);
+           _source_graph[i] .neighbors.push_back(source_neighbor_triangles[i][j]);
         }
     }
 }

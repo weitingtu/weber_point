@@ -12,7 +12,7 @@ public:
         return inst;
     }
 
-    void propagate(const QVector<Poly>& g, int s);
+    void propagate(const QVector<Poly>& g, const QVector<Poly> &sg );
     void clear();
 
     const Poly& get_min_poly() const { return _graph[_min_idx]; }
@@ -27,7 +27,6 @@ private:
     void bfs(const QVector<Poly>& graph, int source_idx, QVector<double>& weight) const;
 
     QVector<Poly> _graph;
-    int           _source_idx;
     int           _min_idx;
     QVector<QVector<double> > _weights;
     QVector<double>           _total_weight;

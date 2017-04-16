@@ -38,7 +38,7 @@ public:
     const QVector<Triangle>& get_triangles() const { return _triangles; }
 
     const QVector<Poly>&     get_graph() const { return _graph; }
-    int get_source_idx() const { return _source_idx; }
+    const QVector<Poly>&     get_source_graph() const { return _source_graph; }
 signals:
 
 public slots:
@@ -76,7 +76,7 @@ private:
     QVector<Triangle>          _triangles;
 
     QVector<Poly>              _graph;
-    int                        _source_idx;
+    QVector<Poly>              _source_graph;
 };
 
 inline CDTManager& get_cdt_manager()
