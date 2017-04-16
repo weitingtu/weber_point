@@ -281,7 +281,7 @@ QMap<int, QVector<int> > CDTManager::_build_triangle_point_map(const QVector<Tri
     return map;
 }
 
-QVector<QVector<int>> CDTManager::_build_poly_neighbors( const QMap<int, QVector<int> >& map ,const QVector<QVector<int> >& source_indices ) const
+QVector<QVector<int>> CDTManager::_build_poly_neighbor_triangles( const QMap<int, QVector<int> >& map ,const QVector<QVector<int> >& source_indices ) const
 {
     QVector<QVector<int>> source_neighbors;
     source_neighbors.resize(source_indices.size());
@@ -320,7 +320,6 @@ QVector<QVector<int>> CDTManager::_build_poly_neighbors( const QMap<int, QVector
 void CDTManager::fermat_point()
 {
     QMap<int, QVector<int> > triangle_point_map = _build_triangle_point_map(_triangles);
-    QVector<QVector<int>> source_neighbors = _build_poly_neighbors(triangle_point_map, _source_indices);
 
     _graph.clear();
     _graph.resize(_triangles.size() + _source_indices.size());
@@ -343,6 +342,7 @@ void CDTManager::fermat_point()
         _graph[idx].center = QPointF((t.points[0].x() + t.points[1].x() + t.points[2].x()) / 3, (t.points[0].y() + t.points[1].y() + t.points[2].y()) / 3);
     }
 
+    QVector<QVector<int>> source_neighbor_triangles = _build_poly_neighbor_triangles(triangle_point_map, _source_indices);
     _source_idx = idx;
 
     for(int i = 0; i < _source_indices.size(); ++i, ++idx)
@@ -361,9 +361,9 @@ void CDTManager::fermat_point()
         y /= ( _source_indices[i].size() - 1 );
         _graph[idx].center = QPointF(x, y);
 
-        for(int j = 0; j < source_neighbors[i].size(); ++j)
+        for(int j = 0; j < source_neighbor_triangles[i].size(); ++j)
         {
-           _graph[idx] .neighbors.push_back(source_neighbors[i][j]);
+           _graph[idx] .neighbors.push_back(source_neighbor_triangles[i][j]);
         }
     }
 }

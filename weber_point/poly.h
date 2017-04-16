@@ -13,6 +13,8 @@ public:
     QVector<QPointF> points;
     QVector<int>     indices;
     QVector<int>     neighbors;
+
+    bool is_neighbor(int idx) const;
 };
 
 

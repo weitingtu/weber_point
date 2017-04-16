@@ -57,8 +57,7 @@ private:
     void _set_triangles(const triangulateio& io);
 
     QMap<int, QVector<int> > _build_triangle_point_map(const QVector<Triangle> &triangles) const;
-//    QVector<QVector<int>> _build_source_neighbors( const QVector<QVector<int> >&  source_indices ) const;
-    QVector<QVector<int>> _build_poly_neighbors( const QMap<int, QVector<int> >& map ,const QVector<QVector<int> >& source_indices ) const;
+    QVector<QVector<int>> _build_poly_neighbor_triangles( const QMap<int, QVector<int> >& map ,const QVector<QVector<int> >& source_indices ) const;
 
     // raw data
     QVector<QPolygonF>         _sources;
