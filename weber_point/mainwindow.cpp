@@ -337,7 +337,8 @@ void MainWindow::_decompose()
         neighbors.push_back(get_cdt_manager().get_graph()[p.neighbors[i]].center);
     }
 
-    Decomposition d(p, neighbors);
+    QVector<Poly> graph = get_cdt_manager().get_graph();
+    Decomposition d(p, neighbors, graph, get_wave_propagate().get_min_poly_idx());
     d.decompose();
 
     const QVector<QPointF>& centers = d.get_centers();
