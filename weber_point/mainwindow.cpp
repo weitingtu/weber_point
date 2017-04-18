@@ -30,7 +30,8 @@ MainWindow::MainWindow(QWidget *parent)
     _scene(new Scene(this)),
     _view(new QGraphicsView(_scene, this)),
     _panel(new Panel(this)),
-    _dock(new QDockWidget(tr("Control Panel"), this))
+    _dock(new QDockWidget(tr("Control Panel"), this)),
+    _result()
 {
     connect(_panel, SIGNAL(mode_changed(MODE)), _scene, SLOT(set_mode(MODE)));
     setCentralWidget(_view);
@@ -119,11 +120,11 @@ void MainWindow::_connect_panel()
 
 void MainWindow::_clear()
 {
+    _result.clear();
     _scene->clear();
     _panel->clear();
     get_input_manager().clear();
     get_cdt_manager().clear();
-    get_wave_propagate().clear();
     _scene->initialize();
 }
 
@@ -274,15 +275,32 @@ void MainWindow::_draw_poly(const Poly& p)
 
 void MainWindow::_wave_propagation()
 {
+    _result.clear();
     _panel->set_source_number(get_cdt_manager().get_source_graph().size());
 
-    get_wave_propagate().propagate(get_cdt_manager().get_graph(), get_cdt_manager().get_source_graph());
+    WavePropagation wp;
+    wp.propagate(get_cdt_manager().get_graph(), get_cdt_manager().get_source_graph());
 
-    int idx = get_wave_propagate().get_min_poly_idx();
+    _result.graph        = get_cdt_manager().get_graph();
+    _result.weights      = wp.get_weights();
+    _result.total_weight = wp.get_total_weight();
+    _result.min_polies.push_back(MinPoly());
+
+    int idx = wp.get_min_poly_idx();
     if(-1 == idx)
     {
         return;
     }
+
+    _result.min_polies.last().idx = idx;
+    QVector<double> weights;
+    for(int i = 0; i < _result.weights.size(); ++i)
+    {
+        weights.push_back(_result.weights[i][idx]);
+    }
+    _result.min_polies.last().weights = weights;
+    _result.min_polies.last().total_weight = _result.total_weight[idx];
+
     _draw_poly(get_cdt_manager().get_graph()[idx]);
 }
 
@@ -312,44 +330,59 @@ void MainWindow::_show_weight(int index)
     int source_idx  = index - 1;
     int source_size = get_cdt_manager().get_source_graph().size();
 
-    if(get_wave_propagate().get_weights().empty())
+    if(_result.weights.empty())
     {
         return;
     }
 
     if(source_size == source_idx)
     {
-        _show_weight(get_wave_propagate().get_graph(), get_wave_propagate().get_total_weight());
+        _show_weight(_result.graph, _result.total_weight);
     }
     else
     {
-        _show_weight(get_wave_propagate().get_graph(), get_wave_propagate().get_weights()[source_idx]);
+        _show_weight(_result.graph, _result.weights[source_idx]);
     }
 }
 
 void MainWindow::_decompose()
 {
-    int idx = get_wave_propagate().get_min_poly_idx();
+    int idx = _result.min_polies.last().idx;
     if(-1 == idx)
     {
         return;
     }
 
     QVector<Poly> graph = get_cdt_manager().get_graph();
-    Decomposition::decompose(graph, get_wave_propagate().get_min_poly_idx() );
+    Decomposition::decompose(graph, idx );
 
 //    for(int i = graph.size() - 3; i < graph.size(); ++i)
 //    {
 //        _draw_poly(graph[i]);
 //    }
 
-    get_wave_propagate().propagate(graph, get_cdt_manager().get_source_graph());
+    WavePropagation wp;
+    wp.propagate(graph, get_cdt_manager().get_source_graph());
 
-    idx = get_wave_propagate().get_min_poly_idx();
+    _result.graph        = graph;
+    _result.weights      = wp.get_weights();
+    _result.total_weight = wp.get_total_weight();
+    _result.min_polies.push_back(MinPoly());
+
+    idx = wp.get_min_poly_idx();
     if(-1 == idx)
     {
         return;
     }
+
+    _result.min_polies.last().idx = idx;
+    QVector<double> weights;
+    for(int i = 0; i < _result.weights.size(); ++i)
+    {
+        weights.push_back(_result.weights[i][idx]);
+    }
+    _result.min_polies.last().weights = weights;
+    _result.min_polies.last().total_weight = _result.total_weight[idx];
     _draw_poly(graph[idx]);
 }
 

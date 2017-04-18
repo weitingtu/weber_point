@@ -2,7 +2,6 @@
 #include <QQueue>
 
 WavePropagation::WavePropagation():
-    _graph(),
     _min_poly_idx(-1),
     _weights(),
     _total_weight()
@@ -17,7 +16,7 @@ double WavePropagation::_distance(const QPointF& p1, const QPointF& p2 ) const
     return std::sqrt(x * x + y * y);
 }
 
-void WavePropagation::bfs(const QVector<Poly>& graph, int source_idx, QVector<double>& weight) const
+void WavePropagation::_bfs(const QVector<Poly>& graph, int source_idx, QVector<double>& weight) const
 {
     QQueue<int>     queue;
     QVector<bool>   popped(graph.size(), false);
@@ -60,7 +59,6 @@ void WavePropagation::bfs(const QVector<Poly>& graph, int source_idx, QVector<do
 void WavePropagation::propagate(const QVector<Poly>& g, const QVector<Poly>& sg)
 {
     QVector<Poly> graph = g + sg;
-    _graph = graph;
     int source_idx = g.size();
 
     QVector<QVector<double> >& weights = _weights;
@@ -70,7 +68,7 @@ void WavePropagation::propagate(const QVector<Poly>& g, const QVector<Poly>& sg)
     int idx = 0;
     for(int i = source_idx; i < graph.size(); ++i, ++idx)
     {
-        bfs(graph, i, weights[idx]);
+        _bfs(graph, i, weights[idx]);
     }
 
     QVector<double>& total_weight = _total_weight;
@@ -106,7 +104,6 @@ void WavePropagation::propagate(const QVector<Poly>& g, const QVector<Poly>& sg)
 
 void WavePropagation::clear()
 {
-    _graph.clear();
     _min_poly_idx = -1;
     _weights.clear();
     _total_weight.clear();

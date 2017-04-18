@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "poly.h"
 
 class Scene;
 class Panel;
@@ -43,6 +44,21 @@ private:
     void _show_weight(const QVector<Poly>& graph, const QVector<double>& weight);
     void _draw_poly(const Poly& p);
 
+    struct MinPoly {
+        MinPoly() : idx(-1), weights(), total_weight() {}
+        int idx;
+        QVector<double> weights;
+        double total_weight;
+    };
+
+    struct Result {
+        QVector<Poly>             graph;
+        QVector<QVector<double> > weights;
+        QVector<double>           total_weight;
+        QVector<MinPoly>          min_polies;
+        void clear() { graph.clear(); weights.clear(); total_weight.clear(); min_polies.clear();}
+    };
+
     QMenu*          _file_menu;
     QMenu*          _view_menu;
     QAction*        _clear_act;
@@ -58,6 +74,7 @@ private:
     QGraphicsView*  _view;
     Panel*          _panel;
     QDockWidget*    _dock;
+    Result          _result;
 };
 
 #endif // MAINWINDOW_H
