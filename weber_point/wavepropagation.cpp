@@ -23,7 +23,7 @@ void WavePropagation::bfs(const QVector<Poly>& graph, int source_idx, QVector<do
     QVector<bool>   pushed(graph.size(), false);
     weight.clear();
     weight.resize(graph.size());
-    weight.fill(0.0);
+    weight.fill(std::numeric_limits<double>::lowest());
 
     pushed[source_idx] = true;
     weight[source_idx]  = 0.0;

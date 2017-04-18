@@ -334,20 +334,23 @@ void MainWindow::_decompose()
     {
         return;
     }
-    const Poly& p = get_cdt_manager().get_graph()[idx];
-    QVector<QPointF> neighbors;
-    for(int i = 0 ; i < p.neighbors.size(); ++i)
-    {
-        neighbors.push_back(get_cdt_manager().get_graph()[p.neighbors[i]].center);
-    }
 
     QVector<Poly> graph = get_cdt_manager().get_graph();
     Decomposition::decompose(graph, get_wave_propagate().get_min_poly_idx() );
 
-    for(int i = graph.size() - 3; i < graph.size(); ++i)
+//    for(int i = graph.size() - 3; i < graph.size(); ++i)
+//    {
+//        _draw_poly(graph[i]);
+//    }
+
+    get_wave_propagate().propagate(graph, get_cdt_manager().get_source_graph());
+
+    idx = get_wave_propagate().get_min_poly_idx();
+    if(-1 == idx)
     {
-        _draw_poly(graph[i]);
+        return;
     }
+    _draw_poly(graph[idx]);
 }
 
 void MainWindow::_zoom_in()
