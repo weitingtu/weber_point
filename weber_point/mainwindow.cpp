@@ -260,6 +260,18 @@ void MainWindow::_fermat_point()
     }
 }
 
+void MainWindow::_draw_poly(const Poly& p)
+{
+    const double rad = 3;
+    _scene->addEllipse(p.center.x() - rad, p.center.y() - rad, rad * 2, rad * 2, QPen(QColor(Qt::red)));
+
+    for(int i = 0; i < p.points.size() - 1; ++i)
+    {
+        _scene->addLine(QLineF(p.points[i], p.points[i+1]), QPen(QColor(Qt::red)));
+    }
+    _scene->addLine(QLineF(p.points.back(), p.points.front()), QPen(QColor(Qt::red)));
+}
+
 void MainWindow::_wave_propagation()
 {
     _panel->set_source_number(get_cdt_manager().get_source_graph().size());
@@ -271,15 +283,7 @@ void MainWindow::_wave_propagation()
     {
         return;
     }
-    const Poly& p = get_cdt_manager().get_graph()[idx];
-    const double rad = 3;
-    _scene->addEllipse(p.center.x() - rad, p.center.y() - rad, rad * 2, rad * 2, QPen(QColor(Qt::red)));
-
-    for(int i = 0; i < p.points.size() - 1; ++i)
-    {
-        _scene->addLine(QLineF(p.points[i], p.points[i+1]), QPen(QColor(Qt::red)));
-    }
-    _scene->addLine(QLineF(p.points.back(), p.points.front()), QPen(QColor(Qt::red)));
+    _draw_poly(get_cdt_manager().get_graph()[idx]);
 }
 
 void MainWindow::_show_weight(const QVector<Poly>& graph, const QVector<double>& weight)
@@ -338,14 +342,11 @@ void MainWindow::_decompose()
     }
 
     QVector<Poly> graph = get_cdt_manager().get_graph();
-    Decomposition d(p, neighbors, graph, get_wave_propagate().get_min_poly_idx());
-    d.decompose();
+    Decomposition::decompose(graph, get_wave_propagate().get_min_poly_idx() );
 
-    const QVector<QPointF>& centers = d.get_centers();
-    for(int i = 0; i < centers.size(); ++i)
+    for(int i = graph.size() - 3; i < graph.size(); ++i)
     {
-        const double rad = 3;
-        _scene->addEllipse(centers[i].x() - rad, centers[i].y() - rad, rad * 2, rad * 2, QPen(QColor(Qt::red)));
+        _draw_poly(graph[i]);
     }
 }
 
