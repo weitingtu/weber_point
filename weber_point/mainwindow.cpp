@@ -319,11 +319,11 @@ void MainWindow::_show_weight(int index)
 
     if(source_size == source_idx)
     {
-        _show_weight(get_cdt_manager().get_graph(), get_wave_propagate().get_total_weight());
+        _show_weight(get_wave_propagate().get_graph(), get_wave_propagate().get_total_weight());
     }
     else
     {
-        _show_weight(get_cdt_manager().get_graph(), get_wave_propagate().get_weights()[source_idx]);
+        _show_weight(get_wave_propagate().get_graph(), get_wave_propagate().get_weights()[source_idx]);
     }
 }
 

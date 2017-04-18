@@ -2,6 +2,7 @@
 #include <QQueue>
 
 WavePropagation::WavePropagation():
+    _graph(),
     _min_poly_idx(-1),
     _weights(),
     _total_weight()
@@ -59,6 +60,7 @@ void WavePropagation::bfs(const QVector<Poly>& graph, int source_idx, QVector<do
 void WavePropagation::propagate(const QVector<Poly>& g, const QVector<Poly>& sg)
 {
     QVector<Poly> graph = g + sg;
+    _graph = graph;
     int source_idx = g.size();
 
     QVector<QVector<double> >& weights = _weights;
@@ -104,6 +106,7 @@ void WavePropagation::propagate(const QVector<Poly>& g, const QVector<Poly>& sg)
 
 void WavePropagation::clear()
 {
+    _graph.clear();
     _min_poly_idx = -1;
     _weights.clear();
     _total_weight.clear();

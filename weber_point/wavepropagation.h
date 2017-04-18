@@ -17,6 +17,7 @@ public:
 
     int get_min_poly_idx() const { return _min_poly_idx; }
 
+    const QVector<Poly>&             get_graph() const { return _graph; }
     const QVector<QVector<double> >& get_weights() const { return _weights; }
     const QVector<double>&           get_total_weight() const { return _total_weight; }
 
@@ -26,6 +27,7 @@ private:
     double _distance(const QPointF& p1, const QPointF& p2 ) const;
     void bfs(const QVector<Poly>& graph, int source_idx, QVector<double>& weight) const;
 
+    QVector<Poly>             _graph;
     int                       _min_poly_idx;
     QVector<QVector<double> > _weights;
     QVector<double>           _total_weight;
