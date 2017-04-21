@@ -12,7 +12,8 @@
 #include <QMenuBar>
 #include <QDockWidget>
 #include <QPushButton>
-#include <QDebug>
+#include <QSet>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -261,16 +262,16 @@ void MainWindow::_fermat_point()
     }
 }
 
-void MainWindow::_draw_poly(const Poly& p)
+void MainWindow::_draw_poly(const Poly& p, const QPen& pen)
 {
     const double rad = 3;
-    _scene->addEllipse(p.center.x() - rad, p.center.y() - rad, rad * 2, rad * 2, QPen(QColor(Qt::red)));
+    _scene->addEllipse(p.center.x() - rad, p.center.y() - rad, rad * 2, rad * 2, pen);
 
     for(int i = 0; i < p.points.size() - 1; ++i)
     {
-        _scene->addLine(QLineF(p.points[i], p.points[i+1]), QPen(QColor(Qt::red)));
+        _scene->addLine(QLineF(p.points[i], p.points[i+1]), pen);
     }
-    _scene->addLine(QLineF(p.points.back(), p.points.front()), QPen(QColor(Qt::red)));
+    _scene->addLine(QLineF(p.points.back(), p.points.front()), pen);
 }
 
 void MainWindow::_wave_propagation()
@@ -301,10 +302,10 @@ void MainWindow::_wave_propagation()
     _result.min_polies.last().weights = weights;
     _result.min_polies.last().total_weight = _result.total_weight[idx];
 
-    _draw_poly(get_cdt_manager().get_graph()[idx]);
+    _draw_poly(_result.graph[idx], QPen(QColor(Qt::red)));
 }
 
-void MainWindow::_show_weight(const QVector<Poly>& graph, const QVector<double>& weight)
+void MainWindow::_show_weight(const QVector<Poly>& graph, const QVector<double>& weight, const QMap<int, double>& map)
 {
     _scene->clear_texts();
 
@@ -315,7 +316,14 @@ void MainWindow::_show_weight(const QVector<Poly>& graph, const QVector<double>&
 
     for(int i = 0; i < graph.size(); ++i)
     {
-        _scene->add_text(graph[i].center, QString::number(weight[i]));
+        if(map.contains(i))
+        {
+            _scene->add_text(graph[i].center, QString::number(map[i]));
+        }
+        else
+        {
+            _scene->add_text(graph[i].center, QString::number(weight[i]));
+        }
     }
 }
 
@@ -323,7 +331,7 @@ void MainWindow::_show_weight(int index)
 {
     if(index <= 0)
     {
-        _show_weight(QVector<Poly>(), QVector<double>());
+        _show_weight(QVector<Poly>(), QVector<double>(), QMap<int, double>());
         return;
     }
 
@@ -337,24 +345,36 @@ void MainWindow::_show_weight(int index)
 
     if(source_size == source_idx)
     {
-        _show_weight(_result.graph, _result.total_weight);
+        QMap<int, double> map;
+        for(int i = 0; i < _result.min_polies.size(); ++i)
+        {
+            const MinPoly& min_poly = _result.min_polies[i];
+            map[min_poly.idx] = min_poly.total_weight;
+        }
+        _show_weight(_result.graph, _result.total_weight, map);
     }
     else
     {
-        _show_weight(_result.graph, _result.weights[source_idx]);
+        QMap<int, double> map;
+        for(int i = 0; i < _result.min_polies.size(); ++i)
+        {
+            const MinPoly& min_poly = _result.min_polies[i];
+            map[min_poly.idx] = min_poly.weights[source_idx];
+        }
+        _show_weight(_result.graph, _result.weights[source_idx], map);
     }
 }
 
 void MainWindow::_decompose()
 {
-    int idx = _result.min_polies.last().idx;
-    if(-1 == idx)
+    int prev_idx = _result.min_polies.last().idx;
+    if(-1 == prev_idx)
     {
         return;
     }
 
-    QVector<Poly> graph = get_cdt_manager().get_graph();
-    Decomposition::decompose(graph, idx );
+    QVector<Poly> graph = _result.graph;
+    Decomposition::decompose( graph, prev_idx );
 
 //    for(int i = graph.size() - 3; i < graph.size(); ++i)
 //    {
@@ -362,18 +382,33 @@ void MainWindow::_decompose()
 //    }
 
     WavePropagation wp;
-    wp.propagate(graph, get_cdt_manager().get_source_graph());
+    wp.propagate( graph, get_cdt_manager().get_source_graph());
+
+    int idx = wp.get_min_poly_idx();
+    if(-1 == idx)
+    {
+        return;
+    }
+
+    if( _result.min_polies.last().total_weight * 0.99 < wp.get_total_weight()[idx])
+    {
+        QString msg = QString("Improvement (%1 - %2) < 0.1% %3, finished")
+                .arg(QString::number(_result.min_polies.last().total_weight))
+                .arg(QString::number(wp.get_total_weight()[idx]))
+                .arg(QString::number(_result.min_polies.last().total_weight));
+
+        QMessageBox::information(this, QString(), msg);
+
+        if(_result.min_polies.size() > 1)
+        {
+            return;
+        }
+    }
 
     _result.graph        = graph;
     _result.weights      = wp.get_weights();
     _result.total_weight = wp.get_total_weight();
     _result.min_polies.push_back(MinPoly());
-
-    idx = wp.get_min_poly_idx();
-    if(-1 == idx)
-    {
-        return;
-    }
 
     _result.min_polies.last().idx = idx;
     QVector<double> weights;
@@ -383,7 +418,17 @@ void MainWindow::_decompose()
     }
     _result.min_polies.last().weights = weights;
     _result.min_polies.last().total_weight = _result.total_weight[idx];
-    _draw_poly(graph[idx]);
+
+    for(int i = graph.size() - 3; i < graph.size(); ++i)
+    {
+        if(i == idx)
+        {
+            continue;
+        }
+        _draw_poly(graph[i], QPen(Qt::darkRed));
+    }
+
+    _draw_poly(graph[idx], QPen(QColor(Qt::red)));
 }
 
 void MainWindow::_zoom_in()

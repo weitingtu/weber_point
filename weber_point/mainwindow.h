@@ -11,6 +11,7 @@ class QAction;
 class QGraphicsScene;
 class QGraphicsView;
 class QDockWdiget;
+class QPen;
 class Poly;
 
 class MainWindow : public QMainWindow
@@ -41,8 +42,8 @@ private:
     void _create_actions();
     void _create_menus();
     void _connect_panel();
-    void _show_weight(const QVector<Poly>& graph, const QVector<double>& weight);
-    void _draw_poly(const Poly& p);
+    void _show_weight(const QVector<Poly>& graph, const QVector<double>& weight, const QMap<int, double> &map);
+    void _draw_poly(const Poly& p, const QPen &pen);
 
     struct MinPoly {
         MinPoly() : idx(-1), weights(), total_weight() {}
