@@ -34,6 +34,8 @@ public:
     void cdt();
     void fermat_point();
 
+    bool is_hexagonals_empty() const { return _hexagonals.empty(); }
+
     const QVector<QLineF>&   get_lines() const { return _lines; }
     const QVector<Triangle>& get_triangles() const { return _triangles; }
 

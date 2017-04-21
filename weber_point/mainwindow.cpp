@@ -142,6 +142,11 @@ namespace  {
 
 void MainWindow::_hexagonal()
 {
+    if(!get_cdt_manager().is_hexagonals_empty())
+    {
+        return;
+    }
+
     const static double a = 80;
 //    double a = _get_hex(get_input_manager().get_total_area(), get_input_manager().get_source_area());
     double h = a * std::sqrt(3);
@@ -190,6 +195,10 @@ void MainWindow::_hexagonal()
 
 void MainWindow::_cdt()
 {
+    if(!get_cdt_manager().get_lines().empty())
+    {
+        return;
+    }
     get_cdt_manager().cdt();
 
     const QVector<QLineF>& lines = get_cdt_manager().get_lines();
@@ -201,6 +210,10 @@ void MainWindow::_cdt()
 
 void MainWindow::_fermat_point()
 {
+    if(!get_cdt_manager().get_graph().empty())
+    {
+        return;
+    }
     get_cdt_manager().fermat_point();
 
     const QVector<Poly>& graph = get_cdt_manager().get_graph();
