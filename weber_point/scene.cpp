@@ -30,6 +30,14 @@ void Scene::clear_texts()
     _texts.clear();
 }
 
+void Scene::adjust_texts()
+{
+    for(int i = 0; i < _texts.size(); ++i)
+    {
+        _texts[i]->adjustSize();
+    }
+}
+
 void Scene::initialize()
 {
     double width  = get_input_manager().get_width();

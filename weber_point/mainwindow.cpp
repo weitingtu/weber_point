@@ -331,11 +331,11 @@ void MainWindow::_show_weight(const QVector<Poly>& graph, const QVector<double>&
     {
         if(map.contains(i))
         {
-            _scene->add_text(graph[i].center, QString::number(map[i]));
+            _scene->add_text(graph[i].center, QString::number(map[i], 'g', 4));
         }
         else
         {
-            _scene->add_text(graph[i].center, QString::number(weight[i]));
+            _scene->add_text(graph[i].center, QString::number(weight[i], 'g', 4));
         }
     }
 }
@@ -460,15 +460,18 @@ void MainWindow::_decompose()
 void MainWindow::_zoom_in()
 {
     _view->scale(2.0, 2.0);
+    _scene->adjust_texts();
 }
 
 void MainWindow::_zoom_out()
 {
     _view->scale(1.0 / 2.0, 1.0 / 2.0);
+    _scene->adjust_texts();
 }
 
 void MainWindow::_zoom_fit()
 {
     _view->fitInView(_scene->sceneRect(), Qt::KeepAspectRatio);
     _view->centerOn(_scene->sceneRect().center());
+    _scene->adjust_texts();
 }
