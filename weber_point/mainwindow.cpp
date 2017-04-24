@@ -402,14 +402,14 @@ void MainWindow::_decompose()
     double old_weight = _result.min_polies.last().total_weight;
     double new_weight = wp.get_total_weight()[idx];
 
-    if((new_weight < old_weight) && (old_weight - new_weight > 0.01 * old_weight))
+    if((new_weight < old_weight) && (old_weight - new_weight > 0.00001 * old_weight))
     {
        improve = true;
     }
 
     if((!improve) &&(_result.min_polies.size() > 1))
     {
-        QString msg = QString("New weight %1 > 0.99% old weight %2, finished").arg(QString::number(new_weight)).arg(QString::number(old_weight));
+        QString msg = QString("New weight %1 > 0.99999% old weight %2, finished").arg(QString::number(new_weight)).arg(QString::number(old_weight));
         QMessageBox::information(this, QString(), msg);
 
         if(_result.min_polies.size() > 1)
