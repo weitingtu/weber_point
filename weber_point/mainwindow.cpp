@@ -389,11 +389,6 @@ void MainWindow::_decompose()
     QVector<Poly> graph = _result.graph;
     Decomposition::decompose( graph, prev_idx );
 
-//    for(int i = graph.size() - 3; i < graph.size(); ++i)
-//    {
-//        _draw_poly(graph[i]);
-//    }
-
     WavePropagation wp;
     wp.propagate( graph, get_cdt_manager().get_source_graph());
 
@@ -403,13 +398,18 @@ void MainWindow::_decompose()
         return;
     }
 
-    if( _result.min_polies.last().total_weight * 0.99 < wp.get_total_weight()[idx])
-    {
-        QString msg = QString("Improvement (%1 - %2) < 0.1% %3, finished")
-                .arg(QString::number(_result.min_polies.last().total_weight))
-                .arg(QString::number(wp.get_total_weight()[idx]))
-                .arg(QString::number(_result.min_polies.last().total_weight));
+    bool improve = false;
+    double old_weight = _result.min_polies.last().total_weight;
+    double new_weight = wp.get_total_weight()[idx];
 
+    if((new_weight < old_weight) && (old_weight - new_weight > 0.01 * old_weight))
+    {
+       improve = true;
+    }
+
+    if((!improve) &&(_result.min_polies.size() > 1))
+    {
+        QString msg = QString("New weight %1 > 0.99% old weight %2, finished").arg(QString::number(new_weight)).arg(QString::number(old_weight));
         QMessageBox::information(this, QString(), msg);
 
         if(_result.min_polies.size() > 1)
@@ -441,7 +441,20 @@ void MainWindow::_decompose()
         _draw_poly(graph[i], QPen(Qt::darkRed));
     }
 
-    _draw_poly(graph[idx], QPen(QColor(Qt::red)));
+    if(improve)
+    {
+        _draw_poly(graph[idx], QPen(QColor(Qt::red)));
+    }
+    else
+    {
+        _draw_poly(graph[idx], QPen(QColor(Qt::darkRed)));
+    }
+
+    if(!improve)
+    {
+        QString msg = QString("New weight %1 > 0.99% old weight %2, finished").arg(QString::number(new_weight)).arg(QString::number(old_weight));
+        QMessageBox::information(this, QString(), msg);
+    }
 }
 
 void MainWindow::_zoom_in()
