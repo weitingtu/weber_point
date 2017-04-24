@@ -33,6 +33,7 @@ private slots:
     void _wave_propagation();
     void _show_weight(int index);
     void _decompose();
+    void _change_font_size(int i);
     void _zoom_in();
     void _zoom_out();
     void _zoom_fit();

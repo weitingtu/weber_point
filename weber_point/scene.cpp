@@ -30,11 +30,13 @@ void Scene::clear_texts()
     _texts.clear();
 }
 
-void Scene::adjust_texts()
+void Scene::adjust_texts(int size)
 {
     for(int i = 0; i < _texts.size(); ++i)
     {
-        _texts[i]->adjustSize();
+        QFont f = _texts[i]->font();
+        f.setPointSize(size);
+        _texts[i]->setFont(f);
     }
 }
 

@@ -5,6 +5,7 @@
 #include <QWidget>
 
 class QGroupBox;
+class QSpinBox;
 class QPushButton;
 class QComboBox;
 
@@ -14,6 +15,7 @@ class Panel : public QWidget
 public:
     explicit Panel(QWidget *parent = 0);
 
+    QSpinBox*    get_font_size_spin_box() const { return _font_size; }
     QPushButton* get_clear_button() const { return _clear; }
     QPushButton* get_hex_button() const { return _hex; }
     QPushButton* get_cdt_button() const { return _cdt; }
@@ -37,6 +39,7 @@ private slots:
 private:
     QGroupBox* _createSourceObstacleGroup();
 
+    QSpinBox*    _font_size;
     QPushButton* _clear;
     QPushButton* _hex;
     QPushButton* _cdt;

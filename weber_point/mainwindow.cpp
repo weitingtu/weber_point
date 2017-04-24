@@ -5,6 +5,7 @@
 #include "decomposition.h"
 #include "panel.h"
 #include "scene.h"
+#include <QSpinBox>
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsTextItem>
@@ -111,6 +112,7 @@ void MainWindow::_create_menus()
 
 void MainWindow::_connect_panel()
 {
+    connect(_panel->get_font_size_spin_box(), SIGNAL(valueChanged(int)), this, SLOT(_change_font_size(int)));
     connect(_panel->get_clear_button(), SIGNAL(clicked(bool)), this, SLOT(_clear()));
     connect(_panel->get_hex_button(), SIGNAL(clicked(bool)), this, SLOT(_hexagonal()));
     connect(_panel->get_cdt_button(), SIGNAL(clicked(bool)), this, SLOT(_cdt()));
@@ -452,21 +454,23 @@ void MainWindow::_decompose()
     }
 }
 
+void MainWindow::_change_font_size(int i)
+{
+    _scene->adjust_texts(i);
+}
+
 void MainWindow::_zoom_in()
 {
     _view->scale(2.0, 2.0);
-    _scene->adjust_texts();
 }
 
 void MainWindow::_zoom_out()
 {
     _view->scale(1.0 / 2.0, 1.0 / 2.0);
-    _scene->adjust_texts();
 }
 
 void MainWindow::_zoom_fit()
 {
     _view->fitInView(_scene->sceneRect(), Qt::KeepAspectRatio);
     _view->centerOn(_scene->sceneRect().center());
-    _scene->adjust_texts();
 }

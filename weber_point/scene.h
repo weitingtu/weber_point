@@ -14,7 +14,7 @@ public:
 
     void add_text(const QPointF& p, const QString& text);
     void clear_texts();
-    void adjust_texts();
+    void adjust_texts(int size);
 
 signals:
 

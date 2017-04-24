@@ -1,11 +1,13 @@
 #include "panel.h"
 #include <QGroupBox>
+#include <QSpinBox>
 #include <QRadioButton>
 #include <QPushButton>
 #include <QComboBox>
 #include <QVBoxLayout>
 
 Panel::Panel(QWidget *parent) : QWidget(parent),
+    _font_size(new QSpinBox(this)),
     _clear(new QPushButton(tr("&Clear"), this)),
     _hex(new QPushButton(tr("&Hexagonal"), this)),
     _cdt(new QPushButton(tr("C&DT"), this)),
@@ -14,9 +16,12 @@ Panel::Panel(QWidget *parent) : QWidget(parent),
     _decompose(new QPushButton(tr("&Decompose"), this)),
     _box(new QComboBox(this))
 {
+    _font_size->setValue(9);
+
     connect(_box, SIGNAL(activated(int)), this, SIGNAL(activated(int)));
 
     QVBoxLayout *vbox = new QVBoxLayout;
+    vbox->addWidget(_font_size);
     vbox->addWidget(_createSourceObstacleGroup());
     vbox->addWidget(_clear);
     vbox->addWidget(_hex);
