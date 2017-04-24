@@ -76,6 +76,7 @@ private:
     Panel*          _panel;
     QDockWidget*    _dock;
     Result          _result;
+    bool            _finish;
 };
 
 #endif // MAINWINDOW_H

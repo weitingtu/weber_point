@@ -32,7 +32,8 @@ MainWindow::MainWindow(QWidget *parent)
     _view(new QGraphicsView(_scene, this)),
     _panel(new Panel(this)),
     _dock(new QDockWidget(tr("Control Panel"), this)),
-    _result()
+    _result(),
+    _finish(false)
 {
     connect(_panel, SIGNAL(mode_changed(MODE)), _scene, SLOT(set_mode(MODE)));
     setCentralWidget(_view);
@@ -121,6 +122,7 @@ void MainWindow::_connect_panel()
 
 void MainWindow::_clear()
 {
+    _finish = false;
     _result.clear();
     _scene->clear();
     _panel->clear();
@@ -277,7 +279,7 @@ void MainWindow::_fermat_point()
 
 void MainWindow::_draw_poly(const Poly& p, const QPen& pen)
 {
-    const double rad = 3;
+    const double rad = 2;
     _scene->addEllipse(p.center.x() - rad, p.center.y() - rad, rad * 2, rad * 2, pen);
 
     for(int i = 0; i < p.points.size() - 1; ++i)
@@ -380,6 +382,11 @@ void MainWindow::_show_weight(int index)
 
 void MainWindow::_decompose()
 {
+    if(_finish)
+    {
+        return;
+    }
+
     int prev_idx = _result.min_polies.last().idx;
     if(-1 == prev_idx)
     {
@@ -398,24 +405,12 @@ void MainWindow::_decompose()
         return;
     }
 
-    bool improve = false;
     double old_weight = _result.min_polies.last().total_weight;
     double new_weight = wp.get_total_weight()[idx];
 
-    if((new_weight < old_weight) && (old_weight - new_weight > 0.00001 * old_weight))
+    if((new_weight >= old_weight) || (old_weight - new_weight < 0.00001 * old_weight))
     {
-       improve = true;
-    }
-
-    if((!improve) &&(_result.min_polies.size() > 1))
-    {
-        QString msg = QString("New weight %1 > 0.99999% old weight %2, finished").arg(QString::number(new_weight)).arg(QString::number(old_weight));
-        QMessageBox::information(this, QString(), msg);
-
-        if(_result.min_polies.size() > 1)
-        {
-            return;
-        }
+       _finish = true;
     }
 
     _result.graph        = graph;
@@ -441,16 +436,16 @@ void MainWindow::_decompose()
         _draw_poly(graph[i], QPen(Qt::darkRed));
     }
 
-    if(improve)
-    {
-        _draw_poly(graph[idx], QPen(QColor(Qt::red)));
-    }
-    else
+    if(_finish)
     {
         _draw_poly(graph[idx], QPen(QColor(Qt::darkRed)));
     }
+    else
+    {
+        _draw_poly(graph[idx], QPen(QColor(Qt::red)));
+    }
 
-    if(!improve)
+    if(_finish)
     {
         QString msg = QString("New weight %1 > 0.99% old weight %2, finished").arg(QString::number(new_weight)).arg(QString::number(old_weight));
         QMessageBox::information(this, QString(), msg);
