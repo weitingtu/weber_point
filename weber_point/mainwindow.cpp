@@ -335,11 +335,11 @@ void MainWindow::_show_weight(const QVector<Poly>& graph, const QVector<double>&
     {
         if(map.contains(i))
         {
-            _scene->add_text(graph[i].center, QString::number(map[i], 'g', 4));
+            _scene->add_text(graph[i].center, QString::number(map[i]));
         }
         else
         {
-            _scene->add_text(graph[i].center, QString::number(weight[i], 'g', 4));
+            _scene->add_text(graph[i].center, QString::number(weight[i]));
         }
     }
 }
@@ -441,6 +441,7 @@ void MainWindow::_decompose()
     if(_finish)
     {
         _draw_poly(graph[idx], QPen(QColor(Qt::darkRed)));
+        _draw_poly(graph[prev_idx], QPen(QColor(Qt::red)));
     }
     else
     {
