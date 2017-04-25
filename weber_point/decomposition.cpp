@@ -41,13 +41,14 @@ void Decomposition::decompose(QVector<Poly>& graph, int idx)
             p.neighbors.push_back(neighbor_idx);
             int poly_idx = graph.size();
             Poly& neighbor_poly = graph[neighbor_idx];
-            for(int j = 0; j < neighbor_poly.neighbors.size(); ++j)
-            {
-                if(neighbor_poly.neighbors[j] == idx)
-                {
-                    neighbor_poly.neighbors[j] = poly_idx;
-                }
-            }
+            neighbor_poly.neighbors.push_back(poly_idx);
+//            for(int j = 0; j < neighbor_poly.neighbors.size(); ++j)
+//            {
+//                if(neighbor_poly.neighbors[j] == idx)
+//                {
+//                    neighbor_poly.neighbors[j] = poly_idx;
+//                }
+//            }
         }
         graph.push_back(p);
     }
@@ -59,5 +60,5 @@ void Decomposition::decompose(QVector<Poly>& graph, int idx)
     graph[poly_idx3].neighbors.push_back(poly_idx1);
     graph[poly_idx3].neighbors.push_back(poly_idx2);
 
-    graph[idx].neighbors.clear();
+//    graph[idx].neighbors.clear();
 }
