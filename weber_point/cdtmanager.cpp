@@ -76,24 +76,40 @@ void CDTManager::_data_to_hole_internal_points(const QVector<QPolygonF>& poly)
 {
     for(int i = 0; i < poly.size(); ++i)
     {
-        double x = poly[i][0].x();
-        double y = poly[i][0].y();
-        int count = 1;
-        for(int j = 1; j < poly[i].size() - 1; ++j)
+        if(poly[i].size() < 3)
         {
-            x += poly[i][j].x();
-            y += poly[i][j].y();
-            printf("x: %f %f y: %f %f\n", x, poly[i][j].x(), y, poly[i][j].y());
-            ++count;
-            if( 3 == count)
+            continue;
+        }
+        for(int start_idx = 0; start_idx < poly[i].size() - 3; ++start_idx)
+        {
+            double x = 0.0;
+            double y = 0.0;
+            for(int j = start_idx; j < 3; ++j)
             {
-                break;
+                x += poly[i][j].x();
+                y += poly[i][j].y();
+            }
+            x /= 3;
+            y /= 3;
+
+            if(poly[i].containsPoint(QPointF(x, y), Qt::OddEvenFill))
+            {
+                printf("start idx : %d\n", start_idx);
+                _hole_internal_points.push_back(QPointF(x, y));
+                break;;
             }
         }
-        x /= count;
-        y /= count;
-        printf("x: %f y: %f\n", x, y );
-        _hole_internal_points.push_back(QPointF(x, y));
+
+//        x = 0.0;
+//        y = 0.0;
+//        for(int j = 1; j < 4; ++j)
+//        {
+//            x += poly[i][j].x();
+//            y += poly[i][j].y();
+//        }
+//        x /= 3;
+//        y /= 3;
+//        _hole_internal_points.push_back(QPointF(x, y));
     }
 }
 
