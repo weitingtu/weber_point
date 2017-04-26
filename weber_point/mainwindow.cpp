@@ -410,8 +410,13 @@ void MainWindow::_decompose()
 
     double old_weight = _result.min_polies.last().total_weight;
     double new_weight = wp.get_total_weight()[idx];
+    if(idx == prev_idx)
+    {
+        _finish = true;
+        new_weight = std::min(std::min(wp.get_total_weight()[graph.size() - 3], wp.get_total_weight()[graph.size() - 2]), wp.get_total_weight()[graph.size() - 2]);
 
-    if((new_weight >= old_weight) || (old_weight - new_weight < 0.00001 * old_weight))
+    }
+    else if((new_weight >= old_weight) || (old_weight - new_weight < 0.00001 * old_weight))
     {
        _finish = true;
     }
