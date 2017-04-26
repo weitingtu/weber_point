@@ -331,7 +331,8 @@ void MainWindow::_show_weight(const QVector<Poly>& graph, const QVector<double>&
         return;
     }
 
-    for(int i = 0; i < graph.size(); ++i)
+    int size = std::min(graph.size(), weight.size());
+    for(int i = 0; i < size; ++i)
     {
         if(map.contains(i))
         {
