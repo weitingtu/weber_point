@@ -47,8 +47,8 @@ public slots:
 private:
     explicit CDTManager(QObject *parent = 0);
 
-    void _data_to_hole_center_points(const QVector<QPolygonF>& poly);
-    void _data_to_hole_center_points();
+    void _data_to_hole_internal_points(const QVector<QPolygonF>& poly);
+    void _data_to_hole_internal_points();
     void _poly_to_points(const QVector<QPolygonF>& poly, QVector<QPointF> &points, QVector<QVector<int> >& indices , int &idx);
     void _data_to_points();
     void _points_to_segments();
@@ -71,7 +71,7 @@ private:
     QVector<QVector<int> >     _obstacle_indices;
     QVector<QVector<int> >     _hex_indices;
     QVector<QPair<int, int> >  _segments;
-    QVector<QPointF>           _hole_center_points;
+    QVector<QPointF>           _hole_internal_points;
 
     // output
     QVector<QLineF>            _lines;

@@ -11,7 +11,7 @@ CDTManager::CDTManager(QObject *parent) : QObject(parent),
     _obstacle_indices(),
     _hex_indices(),
     _segments(),
-    _hole_center_points(),
+    _hole_internal_points(),
     _lines(),
     _triangles(),
     _graph(),
@@ -29,7 +29,7 @@ void CDTManager::clear()
     _obstacle_indices.clear();
     _hex_indices.clear();
     _segments.clear();
-    _hole_center_points.clear();
+    _hole_internal_points.clear();
     _lines.clear();
     _triangles.clear();
     _graph.clear();
@@ -43,7 +43,7 @@ void CDTManager::cdt()
         return;
     }
 
-    _data_to_hole_center_points();
+    _data_to_hole_internal_points();
     _data_to_points();
     _points_to_segments();
 
@@ -72,28 +72,36 @@ void CDTManager::cdt()
     free(mid.edgemarkerlist);
 }
 
-void CDTManager::_data_to_hole_center_points(const QVector<QPolygonF>& poly)
+void CDTManager::_data_to_hole_internal_points(const QVector<QPolygonF>& poly)
 {
     for(int i = 0; i < poly.size(); ++i)
     {
         double x = poly[i][0].x();
         double y = poly[i][0].y();
+        int count = 1;
         for(int j = 1; j < poly[i].size() - 1; ++j)
         {
             x += poly[i][j].x();
             y += poly[i][j].y();
+            printf("x: %f %f y: %f %f\n", x, poly[i][j].x(), y, poly[i][j].y());
+            ++count;
+            if( 3 == count)
+            {
+                break;
+            }
         }
-        x /= (poly[i].size() - 1);
-        y /= (poly[i].size() - 1);
-        _hole_center_points.push_back(QPointF(x, y));
+        x /= count;
+        y /= count;
+        printf("x: %f y: %f\n", x, y );
+        _hole_internal_points.push_back(QPointF(x, y));
     }
 }
 
-void CDTManager::_data_to_hole_center_points()
+void CDTManager::_data_to_hole_internal_points()
 {
-    _hole_center_points.clear();
-    _data_to_hole_center_points(_sources);
-    _data_to_hole_center_points(_obstacles);
+    _hole_internal_points.clear();
+    _data_to_hole_internal_points(_sources);
+    _data_to_hole_internal_points(_obstacles);
 }
 
 void CDTManager::_poly_to_points(const QVector<QPolygonF>& poly, QVector<QPointF>& points, QVector<QVector<int> >& indices, int& idx )
@@ -189,12 +197,12 @@ struct triangulateio CDTManager::_create_input() const
         in.segmentlist[i * 2]     = _segments[i].first;
         in.segmentlist[i * 2 + 1] = _segments[i].second;
     }
-    in.numberofholes = _hole_center_points.size();
+    in.numberofholes = _hole_internal_points.size();
     in.holelist = (REAL*) malloc(in.numberofholes * 2 * sizeof(REAL));
-    for(int i = 0; i < _hole_center_points.size(); ++i)
+    for(int i = 0; i < _hole_internal_points.size(); ++i)
     {
-        in.holelist[i * 2]     = _hole_center_points[i].x();
-        in.holelist[i * 2 + 1] = _hole_center_points[i].y();
+        in.holelist[i * 2]     = _hole_internal_points[i].x();
+        in.holelist[i * 2 + 1] = _hole_internal_points[i].y();
     }
     in.numberofregions = 0;
 
