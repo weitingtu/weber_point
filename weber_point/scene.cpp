@@ -26,6 +26,7 @@ void Scene::clear_texts()
     for(int i = 0; i < _texts.size(); ++i)
     {
         removeItem(_texts[i]);
+        delete(_texts[i]);
     }
     _texts.clear();
 }
