@@ -94,22 +94,10 @@ void CDTManager::_data_to_hole_internal_points(const QVector<QPolygonF>& poly)
 
             if(poly[i].containsPoint(QPointF(x, y), Qt::OddEvenFill))
             {
-                printf("start idx : %d\n", start_idx);
                 _hole_internal_points.push_back(QPointF(x, y));
                 break;;
             }
         }
-
-//        x = 0.0;
-//        y = 0.0;
-//        for(int j = 1; j < 4; ++j)
-//        {
-//            x += poly[i][j].x();
-//            y += poly[i][j].y();
-//        }
-//        x /= 3;
-//        y /= 3;
-//        _hole_internal_points.push_back(QPointF(x, y));
     }
 }
 
