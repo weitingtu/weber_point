@@ -11,7 +11,7 @@ Panel::Panel(QWidget *parent) : QWidget(parent),
     _clear(new QPushButton(tr("&Clear"), this)),
     _hex(new QPushButton(tr("&Hexagonal"), this)),
     _cdt(new QPushButton(tr("C&DT"), this)),
-    _fermat_point(new QPushButton(tr("&Fermat Point"), this)),
+    _fermat_point(new QPushButton(tr("Center of &Gravity"), this)),
     _wave_propagate(new QPushButton(tr("&Wave Propagate"), this)),
     _decompose(new QPushButton(tr("&Decompose"), this)),
     _box(new QComboBox(this))

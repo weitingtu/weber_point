@@ -74,7 +74,7 @@ void MainWindow::_create_actions()
     connect(_hexagonal_act, SIGNAL(triggered(bool)), this, SLOT(_hexagonal()));
     _cdt_act    = new QAction(tr("&CDT"), this);
     connect(_cdt_act, SIGNAL(triggered(bool)), this, SLOT(_cdt()));
-    _fermat_point_act = new QAction(tr("&Fermat Point"), this);
+    _fermat_point_act = new QAction(tr("Center of &Gravity"), this);
     connect(_fermat_point_act, SIGNAL(triggered(bool)), this, SLOT(_fermat_point()));
     _wave_propagate_act = new QAction(tr("&Wave Propagate"), this);
     connect(_wave_propagate_act, SIGNAL(triggered(bool)), this, SLOT(_wave_propagation()));
