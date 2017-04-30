@@ -126,6 +126,7 @@ void MainWindow::_clear()
 {
     _finish = false;
     _result.clear();
+    _scene->clear_texts();
     _scene->clear();
     _panel->clear();
     get_input_manager().clear();
