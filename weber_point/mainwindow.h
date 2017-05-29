@@ -77,6 +77,8 @@ private:
     Panel*          _panel;
     QDockWidget*    _dock;
     Result          _result;
+    double          _best;
+    double          _second_best;
     bool            _finish;
 };
 

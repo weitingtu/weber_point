@@ -35,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent)
     _panel(new Panel(this)),
     _dock(new QDockWidget(tr("Control Panel"), this)),
     _result(),
+    _best(std::numeric_limits<double>::max()),
+    _second_best(std::numeric_limits<double>::max()),
     _finish(false)
 {
     connect(_panel, SIGNAL(mode_changed(MODE)), _scene, SLOT(set_mode(MODE)));
@@ -126,6 +128,8 @@ void MainWindow::_connect_panel()
 void MainWindow::_clear()
 {
     _finish = false;
+    _best = std::numeric_limits<double>::max();
+    _second_best = std::numeric_limits<double>::max();
     _result.clear();
     _scene->clear_texts();
     _scene->clear();
@@ -417,11 +421,21 @@ void MainWindow::_decompose()
     {
         _finish = true;
         new_weight = std::min(std::min(wp.get_total_weight()[graph.size() - 3], wp.get_total_weight()[graph.size() - 2]), wp.get_total_weight()[graph.size() - 2]);
-
+        if(_best == std::numeric_limits<double>::max())
+        {
+            _best = old_weight;
+            _panel->set_value(_second_best, _best);
+        }
     }
     else if((new_weight >= old_weight) || (old_weight - new_weight < threshold * old_weight))
     {
        _finish = true;
+    }
+    else
+    {
+        _second_best = old_weight;
+        _best = new_weight;
+        _panel->set_value(_second_best, _best);
     }
 
     _result.graph        = graph;
@@ -457,11 +471,12 @@ void MainWindow::_decompose()
         _draw_poly(graph[idx], QPen(QColor(Qt::red)));
     }
 
-    _panel->set_value(old_weight, new_weight);
     if(_finish)
     {
-        QString msg = QString("New weight %1 > %2 old weight %3, finished").
-                arg(QString::number(new_weight)).arg(QString::number(1 - threshold)).arg(QString::number(old_weight));
+//        QString msg = QString("New weight %1 > %2 old weight %3, finished").
+//                arg(QString::number(new_weight)).arg(QString::number(1 - threshold)).arg(QString::number(old_weight));
+        QString msg = QString("Weber point the best approximation %1\nWeber point the second best approximation %2, finished").
+                arg(QString::number(_best)).arg(QString::number(_second_best));
         QMessageBox::information(this, QString(), msg);
     }
 }
