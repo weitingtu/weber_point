@@ -481,7 +481,7 @@ void MainWindow::_decompose()
 
     if(_finish)
     {
-        QString msg = QString("Weber point the best approximation %1\nWeber point the second best approximation %2, finished").
+        QString msg = QString("Best approximation %1\n2nd best approximation %2, finished").
                 arg(QString::number(_best)).arg(QString::number(_second_best));
         QMessageBox::information(this, QString(), msg);
     }
