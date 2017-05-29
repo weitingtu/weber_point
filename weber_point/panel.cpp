@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QComboBox>
 #include <QVBoxLayout>
+#include <QLineEdit>
 
 Panel::Panel(QWidget *parent) : QWidget(parent),
     _font_size(new QSpinBox(this)),
@@ -14,11 +15,22 @@ Panel::Panel(QWidget *parent) : QWidget(parent),
     _fermat_point(new QPushButton(tr("Center of &Gravity"), this)),
     _wave_propagate(new QPushButton(tr("&Wave Propagate"), this)),
     _decompose(new QPushButton(tr("&Decompose"), this)),
-    _box(new QComboBox(this))
+    _box(new QComboBox(this)),
+    _difference(new QComboBox(this)),
+    _old_value(new QLineEdit(this)),
+    _new_value(new QLineEdit(this))
 {
     _font_size->setValue(9);
 
     connect(_box, SIGNAL(activated(int)), this, SIGNAL(activated(int)));
+
+    _difference->addItem("1%",      0.01);
+    _difference->addItem("0.1%",    0.001);
+    _difference->addItem("0.01%",   0.0001);
+    _difference->addItem("0.001%",  0.00001);
+    _difference->addItem("0.0001%", 0.000001);
+    _old_value->setReadOnly(true);
+    _new_value->setReadOnly(true);
 
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(_font_size);
@@ -30,6 +42,9 @@ Panel::Panel(QWidget *parent) : QWidget(parent),
     vbox->addWidget(_wave_propagate);
     vbox->addWidget(_decompose);
     vbox->addWidget(_box);
+    vbox->addWidget(_difference);
+    vbox->addWidget(_old_value);
+    vbox->addWidget(_new_value);
     vbox->addStretch(1);
     setLayout(vbox);
 
@@ -63,6 +78,12 @@ QGroupBox* Panel::_createSourceObstacleGroup()
     return groupBox;
 }
 
+void Panel::set_value(double o, double n)
+{
+    _old_value->setText(QString::number(o));
+    _new_value->setText(QString::number(n));
+}
+
 void Panel::set_source_number(int s)
 {
     clear();
@@ -80,6 +101,8 @@ void Panel::clear()
 {
     _box->clear();
     _box->addItem("None");
+    _old_value->clear();
+    _new_value->clear();
 }
 
 void Panel::_create_source_rect( bool checked ) const

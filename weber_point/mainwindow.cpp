@@ -15,6 +15,7 @@
 #include <QPushButton>
 #include <QSet>
 #include <QMessageBox>
+#include <QComboBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -411,13 +412,14 @@ void MainWindow::_decompose()
 
     double old_weight = _result.min_polies.last().total_weight;
     double new_weight = wp.get_total_weight()[idx];
+    double threshold  = _panel->get_difference_button()->currentData().toDouble();
     if(idx == prev_idx)
     {
         _finish = true;
         new_weight = std::min(std::min(wp.get_total_weight()[graph.size() - 3], wp.get_total_weight()[graph.size() - 2]), wp.get_total_weight()[graph.size() - 2]);
 
     }
-    else if((new_weight >= old_weight) || (old_weight - new_weight < 0.00001 * old_weight))
+    else if((new_weight >= old_weight) || (old_weight - new_weight < threshold * old_weight))
     {
        _finish = true;
     }
@@ -455,9 +457,11 @@ void MainWindow::_decompose()
         _draw_poly(graph[idx], QPen(QColor(Qt::red)));
     }
 
+    _panel->set_value(old_weight, new_weight);
     if(_finish)
     {
-        QString msg = QString("New weight %1 > 0.99% old weight %2, finished").arg(QString::number(new_weight)).arg(QString::number(old_weight));
+        QString msg = QString("New weight %1 > %2 old weight %3, finished").
+                arg(QString::number(new_weight)).arg(QString::number(1 - threshold)).arg(QString::number(old_weight));
         QMessageBox::information(this, QString(), msg);
     }
 }

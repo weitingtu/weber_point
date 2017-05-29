@@ -8,6 +8,7 @@ class QGroupBox;
 class QSpinBox;
 class QPushButton;
 class QComboBox;
+class QLineEdit;
 
 class Panel : public QWidget
 {
@@ -22,6 +23,8 @@ public:
     QPushButton* get_fermat_point_button() const { return _fermat_point; }
     QPushButton* get_wave_propagate_button() const { return _wave_propagate; }
     QPushButton* get_decompose_button() const { return _decompose; }
+    QComboBox*   get_difference_button() const { return _difference; }
+    void set_value(double o, double n);
     void set_source_number(int s);
     void clear();
 
@@ -47,6 +50,9 @@ private:
     QPushButton* _wave_propagate;
     QPushButton* _decompose;
     QComboBox*   _box;
+    QComboBox*   _difference;
+    QLineEdit*   _old_value;
+    QLineEdit*   _new_value;
 };
 
 #endif // PANEL_H
