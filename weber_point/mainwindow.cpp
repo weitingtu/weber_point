@@ -427,9 +427,16 @@ void MainWindow::_decompose()
             _panel->set_value(_second_best, _best);
         }
     }
-    else if((new_weight >= old_weight) || (old_weight - new_weight < threshold * old_weight))
+    else if(old_weight - new_weight < threshold * old_weight)
     {
-       _finish = true;
+        _finish = true;
+        _second_best = old_weight;
+        _best = new_weight;
+        _panel->set_value(_second_best, _best);
+    }
+    else if(new_weight >= old_weight)
+    {
+        _finish = true;
     }
     else
     {
@@ -473,8 +480,6 @@ void MainWindow::_decompose()
 
     if(_finish)
     {
-//        QString msg = QString("New weight %1 > %2 old weight %3, finished").
-//                arg(QString::number(new_weight)).arg(QString::number(1 - threshold)).arg(QString::number(old_weight));
         QString msg = QString("Weber point the best approximation %1\nWeber point the second best approximation %2, finished").
                 arg(QString::number(_best)).arg(QString::number(_second_best));
         QMessageBox::information(this, QString(), msg);
