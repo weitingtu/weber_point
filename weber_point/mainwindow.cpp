@@ -423,6 +423,7 @@ void MainWindow::_decompose()
         new_weight = std::min(std::min(wp.get_total_weight()[graph.size() - 3], wp.get_total_weight()[graph.size() - 2]), wp.get_total_weight()[graph.size() - 2]);
         if(_best == std::numeric_limits<double>::max())
         {
+            _second_best = old_weight;
             _best = old_weight;
             _panel->set_value(_second_best, _best);
         }
