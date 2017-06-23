@@ -5,6 +5,7 @@
 #include "decomposition.h"
 #include "panel.h"
 #include "scene.h"
+#include "visibilitygraph.h"
 #include <QSpinBox>
 #include <QGraphicsScene>
 #include <QGraphicsView>
@@ -326,6 +327,16 @@ void MainWindow::_wave_propagation()
     _result.min_polies.last().total_weight = _result.total_weight[idx];
 
     _draw_poly(_result.graph[idx], QPen(QColor(Qt::red)));
+
+    QVector<QPointF> sources;
+    const QVector<Poly>& source_graph = get_cdt_manager().get_source_graph();
+    for(const Poly& poly : source_graph)
+    {
+        sources.push_back(poly.center);
+    }
+    VisibilityGraph vg;
+    vg.create( sources, get_input_manager().get_obstacles(), _result.graph[idx].center);
+    _scene->add_lines(vg.get_lines());
 }
 
 void MainWindow::_show_weight(const QVector<Poly>& graph, const QVector<double>& weight, const QMap<int, double>& map)

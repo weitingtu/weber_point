@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     triangle.cpp \
     poly.cpp \
     wavepropagation.cpp \
-    decomposition.cpp
+    decomposition.cpp \
+    visibilitygraph.cpp
 
 HEADERS  += mainwindow.h \
     inputmanager.h \
@@ -36,7 +37,8 @@ HEADERS  += mainwindow.h \
     triangle.h \
     poly.h \
     wavepropagation.h \
-    decomposition.h
+    decomposition.h \
+    visibilitygraph.h
 
 DEFINES += ANSI_DECLARATORS \
     TRILIBRARY

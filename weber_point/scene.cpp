@@ -8,7 +8,8 @@ Scene::Scene(QObject *parent ):
     QGraphicsScene(parent),
     _mode(MODE::CREATE_SOURCE_RECT),
     _points(),
-    _texts()
+    _texts(),
+    _lines()
 {
     initialize();
 }
@@ -39,6 +40,24 @@ void Scene::adjust_texts(int size)
         f.setPointSize(size);
         _texts[i]->setFont(f);
     }
+}
+
+void Scene::add_lines(const QVector<QLineF>& lines)
+{
+    for(const QLineF& l : lines)
+    {
+        _lines.push_back(addLine(l, QPen(QColor(Qt::blue))));
+    }
+}
+
+void Scene::clear_lines()
+{
+    for(int i = 0; i < _lines.size(); ++i)
+    {
+        removeItem(_lines[i]);
+        delete(_lines[i]);
+    }
+    _lines.clear();
 }
 
 void Scene::initialize()

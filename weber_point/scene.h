@@ -4,6 +4,7 @@
 #include "enum.h"
 #include <QGraphicsScene>
 #include <QPointF>
+#include <QLineF>
 #include <QVector>
 
 class Scene : public QGraphicsScene
@@ -16,6 +17,9 @@ public:
     void clear_texts();
     void adjust_texts(int size);
 
+    void add_lines(const QVector<QLineF>& lines);
+    void clear_lines();
+
 signals:
 
 public slots:
@@ -26,8 +30,9 @@ protected:
 
 private:
     MODE _mode;
-    QVector<QPointF>           _points;
+    QVector<QPointF>            _points;
     QVector<QGraphicsTextItem*> _texts;
+    QVector<QGraphicsLineItem*> _lines;
 };
 
 #endif // SCENE_H
