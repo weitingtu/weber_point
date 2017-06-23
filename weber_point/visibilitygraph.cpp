@@ -116,6 +116,24 @@ void VisibilityGraph::create( const QVector<QPointF>& sources, const QVector<QPo
         }
     }
 
+    int start_idx = sources.size();
+    for(int i = sources.size(); i < labels.size() - 1; ++i)
+    {
+        int idx1 = i;
+        int idx2 = i+1;
+        if(labels[idx1] != labels[idx2])
+        {
+            idx2 = start_idx;
+            start_idx = i + 1;
+        }
+        _edges[idx1][idx2] = true;
+        _edges[idx2][idx1] = true;
+        QLineF l(_points[idx1], _points[idx2]);
+        w[idx1][idx2] = l.length();
+        w[idx2][idx1] = l.length();
+        _lines.push_back(l);
+    }
+
     for(int i = 0; i < sources.size(); ++i)
     {
         QVector<double> d;
