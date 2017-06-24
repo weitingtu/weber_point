@@ -14,6 +14,14 @@ Scene::Scene(QObject *parent ):
     initialize();
 }
 
+void Scene::clear_all()
+{
+    clear();
+    _points.clear();
+    _texts.clear();
+    _lines.clear();
+}
+
 void Scene::add_text(const QPointF& p, const QString& text)
 {
     QGraphicsTextItem* text_item = addText(text);
@@ -42,7 +50,7 @@ void Scene::adjust_texts(int size)
     }
 }
 
-void Scene::add_lines(const QVector<QLineF>& lines)
+void Scene::add_vg_lines(const QVector<QLineF>& lines)
 {
     for(const QLineF& l : lines)
     {
@@ -50,7 +58,7 @@ void Scene::add_lines(const QVector<QLineF>& lines)
     }
 }
 
-void Scene::clear_lines()
+void Scene::clear_vg_lines()
 {
     for(int i = 0; i < _lines.size(); ++i)
     {

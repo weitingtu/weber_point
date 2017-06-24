@@ -132,8 +132,7 @@ void MainWindow::_clear()
     _best = std::numeric_limits<double>::max();
     _second_best = std::numeric_limits<double>::max();
     _result.clear();
-    _scene->clear_texts();
-    _scene->clear();
+    _scene->clear_all();
     _panel->clear();
     get_input_manager().clear();
     get_cdt_manager().clear();
@@ -169,7 +168,7 @@ void MainWindow::_hexagonal()
     get_input_manager().set_width(x_ratio * a);
     get_input_manager().set_height(y_ratio * h);
 
-    _scene->clear();
+    _scene->clear_all();
     _scene->initialize();
 
     get_cdt_manager().clear();
@@ -341,8 +340,8 @@ void MainWindow::_wave_propagation()
     VisibilityGraph vg;
     vg.create( sources, get_input_manager().get_obstacles(), targets);
 
-    _scene->clear_lines();
-    _scene->add_lines(vg.get_lines());
+    _scene->clear_vg_lines();
+    _scene->add_vg_lines(vg.get_lines());
 }
 
 void MainWindow::_show_weight(const QVector<Poly>& graph, const QVector<double>& weight, const QMap<int, double>& map)
@@ -431,8 +430,8 @@ void MainWindow::_decompose()
     VisibilityGraph vg;
     vg.create( sources, get_input_manager().get_obstacles(), targets);
 
-    _scene->clear_lines();
-    _scene->add_lines(vg.get_lines());
+    _scene->clear_vg_lines();
+    _scene->add_vg_lines(vg.get_lines());
 
 
     WavePropagation wp;

@@ -13,12 +13,14 @@ class Scene : public QGraphicsScene
 public:
     explicit Scene(QObject*parent = 0);
 
+    void clear_all();
+
     void add_text(const QPointF& p, const QString& text);
     void clear_texts();
     void adjust_texts(int size);
 
-    void add_lines(const QVector<QLineF>& lines);
-    void clear_lines();
+    void add_vg_lines(const QVector<QLineF>& lines);
+    void clear_vg_lines();
 
 signals:
 
