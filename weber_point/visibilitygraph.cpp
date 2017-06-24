@@ -35,10 +35,10 @@ bool VisibilityGraph::_is_blocked(const QLineF& l, const QVector<QPolygonF>& pol
     return false;
 }
 
-void VisibilityGraph::_dijkstra(const QVector<QVector<double> >& w, int source, QVector<double>& d)
+void VisibilityGraph::_dijkstra(const QVector<QVector<double> >& w, int source, QVector<double>& d, QVector<int>& parent)
 {
     QVector<bool> visited(w.size(), false);
-    QVector<int>  parent(w.size(), std::numeric_limits<int>::max());
+    parent = QVector<int>(w.size(), std::numeric_limits<int>::max());
     d = QVector<double>(w.size(), std::numeric_limits<double>::max());
     d[source] = 0;
     parent[source] = source;
@@ -141,6 +141,18 @@ void VisibilityGraph::create( const QVector<QPointF>& sources, const QVector<QPo
     for(int i = 0; i < sources.size(); ++i)
     {
         QVector<double> d;
-        _dijkstra( w, i, d);
+        QVector<int> parent;
+        _dijkstra( w, i, d, parent);
+        for(int j = 1; j <= targets.size(); ++j)
+        {
+            int t = w.size() - j;
+            int p = parent[t];
+            while(p != t)
+            {
+                _pathes.push_back(QLineF(points[p], points[t]));
+                t = p;
+                p = parent[t];
+            }
+        }
     }
 }

@@ -341,6 +341,7 @@ void MainWindow::_wave_propagation()
 
     _scene->clear_vg_lines();
     _scene->add_vg_lines(vg.get_lines());
+    _scene->add_vg_pathes(vg.get_pathes());
 }
 
 void MainWindow::_show_weight(const QVector<Poly>& graph, const QVector<double>& weight, const QMap<int, double>& map)
@@ -431,6 +432,7 @@ void MainWindow::_decompose()
 
     _scene->clear_vg_lines();
     _scene->add_vg_lines(vg.get_lines());
+    _scene->add_vg_pathes(vg.get_pathes());
 
 
     WavePropagation wp;

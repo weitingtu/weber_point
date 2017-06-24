@@ -22,6 +22,7 @@ public:
     void adjust_texts(int size);
 
     void add_vg_lines(const QVector<QLineF>& lines);
+    void add_vg_pathes(const QVector<QLineF>& lines);
     void clear_vg_lines();
 
     void add_hex_point(double x, double y, double rad);

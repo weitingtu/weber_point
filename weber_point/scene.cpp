@@ -68,6 +68,14 @@ void Scene::add_vg_lines(const QVector<QLineF>& lines)
     }
 }
 
+void Scene::add_vg_pathes(const QVector<QLineF>& lines)
+{
+    for(const QLineF& l : lines)
+    {
+        _vg_lines.push_back(addLine(l, QPen(QColor(Qt::red))));
+    }
+}
+
 void Scene::clear_vg_lines()
 {
     for(int i = 0; i < _vg_lines.size(); ++i)
@@ -218,7 +226,6 @@ bool _is_valid(const QPolygonF& p)
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    printf("accept input %s\n", _accept_input ? "true" : "false");
     if( _accept_input && (( MODE::CREATE_SOURCE_RECT == _mode ) || ( MODE::CREATE_OBS_RECT == _mode ))
             && ( mouseEvent->button()==Qt::LeftButton ) && (sceneRect().contains(mouseEvent->scenePos())) )
     {
