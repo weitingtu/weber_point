@@ -328,14 +328,20 @@ void MainWindow::_wave_propagation()
 
     _draw_poly(_result.graph[idx], QPen(QColor(Qt::red)));
 
-    QVector<QPointF> sources;
-    const QVector<Poly>& source_graph = get_cdt_manager().get_source_graph();
-    for(const Poly& poly : source_graph)
-    {
-        sources.push_back(poly.center);
-    }
+//    QVector<QPointF> sources;
+//    const QVector<Poly>& source_graph = get_cdt_manager().get_source_graph();
+//    for(const Poly& poly : source_graph)
+//    {
+//        sources.push_back(poly.center);
+//    }
+    QVector<QPointF> sources = get_cdt_manager().get_sources();
+    QVector<QPointF> targets;
+    targets.push_back(_result.graph[idx].center);
+
     VisibilityGraph vg;
-    vg.create( sources, get_input_manager().get_obstacles(), _result.graph[idx].center);
+    vg.create( sources, get_input_manager().get_obstacles(), targets);
+
+    _scene->clear_lines();
     _scene->add_lines(vg.get_lines());
 }
 
@@ -415,6 +421,19 @@ void MainWindow::_decompose()
 
     QVector<Poly> graph = _result.graph;
     Decomposition::decompose( graph, prev_idx );
+
+    QVector<QPointF> sources = get_cdt_manager().get_sources();
+    QVector<QPointF> targets;
+    targets.push_back(graph[graph.size() - 3].center);
+    targets.push_back(graph[graph.size() - 2].center);
+    targets.push_back(graph[graph.size() - 1].center);
+
+    VisibilityGraph vg;
+    vg.create( sources, get_input_manager().get_obstacles(), targets);
+
+    _scene->clear_lines();
+    _scene->add_lines(vg.get_lines());
+
 
     WavePropagation wp;
     wp.propagate( graph, get_cdt_manager().get_source_graph());

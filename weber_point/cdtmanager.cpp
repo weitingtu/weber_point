@@ -19,6 +19,17 @@ CDTManager::CDTManager(QObject *parent) : QObject(parent),
 {
 }
 
+QVector<QPointF> CDTManager::get_sources() const
+{
+    QVector<QPointF> sources;
+    const QVector<Poly>& source_graph = get_cdt_manager().get_source_graph();
+    for(const Poly& poly : source_graph)
+    {
+        sources.push_back(poly.center);
+    }
+    return sources;
+}
+
 void CDTManager::clear()
 {
     _sources.clear();

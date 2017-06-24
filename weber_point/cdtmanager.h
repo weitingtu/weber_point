@@ -41,6 +41,7 @@ public:
 
     const QVector<Poly>&     get_graph() const { return _graph; }
     const QVector<Poly>&     get_source_graph() const { return _source_graph; }
+    QVector<QPointF>         get_sources() const;
 signals:
 
 public slots:
