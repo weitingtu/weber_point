@@ -9,7 +9,11 @@ Scene::Scene(QObject *parent ):
     _mode(MODE::CREATE_SOURCE_RECT),
     _points(),
     _texts(),
-    _lines()
+    _vg_lines(),
+    _hex_points(),
+    _cdt_lines(),
+    _fermat_points(),
+    _fermat_lines()
 {
     initialize();
 }
@@ -19,7 +23,11 @@ void Scene::clear_all()
     clear();
     _points.clear();
     _texts.clear();
-    _lines.clear();
+    _vg_lines.clear();
+    _hex_points.clear();
+    _cdt_lines.clear();
+    _fermat_points.clear();
+    _fermat_lines.clear();
 }
 
 void Scene::add_text(const QPointF& p, const QString& text)
@@ -54,18 +62,78 @@ void Scene::add_vg_lines(const QVector<QLineF>& lines)
 {
     for(const QLineF& l : lines)
     {
-        _lines.push_back(addLine(l, QPen(QColor(Qt::blue))));
+        _vg_lines.push_back(addLine(l, QPen(QColor(Qt::blue))));
     }
 }
 
 void Scene::clear_vg_lines()
 {
-    for(int i = 0; i < _lines.size(); ++i)
+    for(int i = 0; i < _vg_lines.size(); ++i)
     {
-        removeItem(_lines[i]);
-        delete(_lines[i]);
+        removeItem(_vg_lines[i]);
+        delete(_vg_lines[i]);
     }
-    _lines.clear();
+    _vg_lines.clear();
+}
+
+void Scene::add_hex_point(double x, double y, double rad)
+{
+    _hex_points.push_back(addEllipse(x - rad, y - rad, rad * 2, rad * 2));
+}
+
+void Scene::clear_hex_points()
+{
+    for(int i = 0; i < _hex_points.size(); ++i)
+    {
+        removeItem(_hex_points[i]);
+        delete(_hex_points[i]);
+    }
+    _hex_points.clear();
+}
+
+void Scene::add_cdt_lines(const QVector<QLineF>& lines)
+{
+    for(const QLineF& l : lines)
+    {
+        _cdt_lines.push_back(addLine(l));
+    }
+}
+
+void Scene::clear_cdt_lines()
+{
+    for(int i = 0; i < _cdt_lines.size(); ++i)
+    {
+        removeItem(_cdt_lines[i]);
+        delete(_cdt_lines[i]);
+    }
+    _cdt_lines.clear();
+}
+
+void Scene::add_fermat_point(double x, double y, double rad)
+{
+    _fermat_points.push_back(addEllipse(x - rad, y - rad, rad * 2, rad * 2));
+}
+
+void Scene::add_fermat_line(const QLineF &line)
+{
+    _fermat_lines.push_back(addLine(line, QPen(QColor(Qt::green))));
+}
+
+void Scene::clear_fermat()
+{
+    for(int i = 0; i < _fermat_points.size(); ++i)
+    {
+        removeItem(_fermat_points[i]);
+        delete(_fermat_points[i]);
+    }
+    _fermat_points.clear();
+
+    for(int i = 0; i < _fermat_lines.size(); ++i)
+    {
+        removeItem(_fermat_lines[i]);
+        delete(_fermat_lines[i]);
+    }
+    _fermat_lines.clear();
 }
 
 void Scene::initialize()

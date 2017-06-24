@@ -189,14 +189,14 @@ void MainWindow::_hexagonal()
                 }
                 shift = a / 2;
             }
-            double rad = 1;
+            const double rad = 1;
             double x = j * a + shift;
             double y = i * h / 2;
             if(get_input_manager().is_blocked(QPointF(x, y)))
             {
                 continue;
             }
-            _scene->addEllipse(x - rad, y - rad, rad * 2, rad * 2);
+            _scene->add_hex_point(x, y, rad);
             points.push_back(QPointF(x, y));
         }
         get_cdt_manager().add_hexagonals(points);
@@ -212,10 +212,7 @@ void MainWindow::_cdt()
     get_cdt_manager().cdt();
 
     const QVector<QLineF>& lines = get_cdt_manager().get_lines();
-    for(int i = 0; i < lines.size(); ++i)
-    {
-        _scene->addLine(lines[i]);
-    }
+    _scene->add_cdt_lines(lines);
 }
 
 void MainWindow::_fermat_point()
@@ -250,7 +247,8 @@ void MainWindow::_fermat_point()
                 continue;
             }
             set.insert(pair);
-            _scene->addLine(QLineF(graph[idx1].center, graph[idx2].center), QPen(QColor(Qt::green)));
+//            _scene->addLine(QLineF(graph[idx1].center, graph[idx2].center), QPen(QColor(Qt::green)));
+            _scene->add_fermat_line(QLineF(graph[idx1].center, graph[idx2].center));
         }
     }
 
@@ -266,7 +264,8 @@ void MainWindow::_fermat_point()
                 continue;
             }
             int idx = p.neighbors[j];
-            _scene->addLine(QLineF(p.center, graph[idx].center), QPen(QColor(Qt::green)));
+//            _scene->addLine(QLineF(p.center, graph[idx].center), QPen(QColor(Qt::green)));
+            _scene->add_fermat_line(QLineF(p.center, graph[idx].center));
         }
     }
 
@@ -274,7 +273,8 @@ void MainWindow::_fermat_point()
     {
         const QPointF& p = graph[i].center;
         const double rad = 1;
-        _scene->addEllipse(p.x() - rad, p.y() - rad, rad * 2, rad * 2);
+//        _scene->addEllipse(p.x() - rad, p.y() - rad, rad * 2, rad * 2);
+        _scene->add_fermat_point(p.x(), p.y(), rad);
     }
 
     for(int i = 0; i < source_graph.size(); ++i)
@@ -327,12 +327,10 @@ void MainWindow::_wave_propagation()
 
     _draw_poly(_result.graph[idx], QPen(QColor(Qt::red)));
 
-//    QVector<QPointF> sources;
-//    const QVector<Poly>& source_graph = get_cdt_manager().get_source_graph();
-//    for(const Poly& poly : source_graph)
-//    {
-//        sources.push_back(poly.center);
-//    }
+    _scene->clear_hex_points();
+    _scene->clear_cdt_lines();
+    _scene->clear_fermat();
+
     QVector<QPointF> sources = get_cdt_manager().get_sources();
     QVector<QPointF> targets;
     targets.push_back(_result.graph[idx].center);

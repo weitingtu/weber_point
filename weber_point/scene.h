@@ -22,6 +22,16 @@ public:
     void add_vg_lines(const QVector<QLineF>& lines);
     void clear_vg_lines();
 
+    void add_hex_point(double x, double y, double rad);
+    void clear_hex_points();
+
+    void add_cdt_lines(const QVector<QLineF>& lines);
+    void clear_cdt_lines();
+
+    void add_fermat_point(double x, double y, double rad);
+    void add_fermat_line(const QLineF& line);
+    void clear_fermat();
+
 signals:
 
 public slots:
@@ -32,9 +42,13 @@ protected:
 
 private:
     MODE _mode;
-    QVector<QPointF>            _points;
-    QVector<QGraphicsTextItem*> _texts;
-    QVector<QGraphicsLineItem*> _lines;
+    QVector<QPointF>               _points;
+    QVector<QGraphicsTextItem*>    _texts;
+    QVector<QGraphicsLineItem*>    _vg_lines;
+    QVector<QGraphicsEllipseItem*> _hex_points;
+    QVector<QGraphicsLineItem*>    _cdt_lines;
+    QVector<QGraphicsEllipseItem*> _fermat_points;
+    QVector<QGraphicsLineItem*>    _fermat_lines;
 };
 
 #endif // SCENE_H
