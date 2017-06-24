@@ -170,6 +170,7 @@ void MainWindow::_hexagonal()
 
     _scene->clear_all();
     _scene->initialize();
+    _scene->stop_input();
 
     get_cdt_manager().clear();
     get_cdt_manager().add_sources(get_input_manager().get_sources());

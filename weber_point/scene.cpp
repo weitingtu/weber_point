@@ -7,6 +7,7 @@
 Scene::Scene(QObject *parent ):
     QGraphicsScene(parent),
     _mode(MODE::CREATE_SOURCE_RECT),
+    _accept_input(true),
     _points(),
     _texts(),
     _vg_lines(),
@@ -21,6 +22,7 @@ Scene::Scene(QObject *parent ):
 void Scene::clear_all()
 {
     clear();
+    _accept_input = true;
     _points.clear();
     _texts.clear();
     _vg_lines.clear();
@@ -216,7 +218,8 @@ bool _is_valid(const QPolygonF& p)
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if( (( MODE::CREATE_SOURCE_RECT == _mode ) || ( MODE::CREATE_OBS_RECT == _mode ))
+    printf("accept input %s\n", _accept_input ? "true" : "false");
+    if( _accept_input && (( MODE::CREATE_SOURCE_RECT == _mode ) || ( MODE::CREATE_OBS_RECT == _mode ))
             && ( mouseEvent->button()==Qt::LeftButton ) && (sceneRect().contains(mouseEvent->scenePos())) )
     {
         _points.push_back(mouseEvent->scenePos());
@@ -236,7 +239,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             _points.clear();
         }
     }
-    else if( ( MODE::CREATE_SOURCE_POLY == _mode ) || ( MODE::CREATE_OBS_POLY == _mode ))
+    else if( _accept_input && (( MODE::CREATE_SOURCE_POLY == _mode ) || ( MODE::CREATE_OBS_POLY == _mode )))
     {
         if(( mouseEvent->button()==Qt::LeftButton ) && (sceneRect().contains(mouseEvent->scenePos())))
         {

@@ -13,6 +13,8 @@ class Scene : public QGraphicsScene
 public:
     explicit Scene(QObject*parent = 0);
 
+    void stop_input() { _accept_input = false; }
+
     void clear_all();
 
     void add_text(const QPointF& p, const QString& text);
@@ -42,6 +44,7 @@ protected:
 
 private:
     MODE _mode;
+    bool _accept_input;
     QVector<QPointF>               _points;
     QVector<QGraphicsTextItem*>    _texts;
     QVector<QGraphicsLineItem*>    _vg_lines;
