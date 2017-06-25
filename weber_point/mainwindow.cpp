@@ -38,7 +38,9 @@ MainWindow::MainWindow(QWidget *parent)
     _result(),
     _best(std::numeric_limits<double>::max()),
     _second_best(std::numeric_limits<double>::max()),
-    _finish(false)
+    _finish(false),
+    _vg_points(),
+    _vg_weights()
 {
     connect(_panel, SIGNAL(mode_changed(MODE)), _scene, SLOT(set_mode(MODE)));
     setCentralWidget(_view);
@@ -123,7 +125,8 @@ void MainWindow::_connect_panel()
     connect(_panel->get_fermat_point_button(), SIGNAL(clicked(bool)), this, SLOT(_fermat_point()));
     connect(_panel->get_wave_propagate_button(), SIGNAL(clicked(bool)), this, SLOT(_wave_propagation()));
     connect(_panel->get_decompose_button(), SIGNAL(clicked(bool)), this, SLOT(_decompose()));
-    connect(_panel, SIGNAL(activated(int)), this, SLOT(_show_weight(int)));
+    connect(_panel, SIGNAL(wp_activated(int)), this, SLOT(_show_wp_weight(int)));
+    connect(_panel, SIGNAL(vg_activated(int)), this, SLOT(_show_vg_weight(int)));
 }
 
 void MainWindow::_clear()
@@ -337,14 +340,16 @@ void MainWindow::_wave_propagation()
     targets.push_back(_result.graph[idx].center);
 
     VisibilityGraph vg;
-    vg.create( sources, get_input_manager().get_obstacles(), targets);
+    vg.create( sources, get_input_manager().get_obstacles(), targets );
+    _vg_points  = vg.get_points();
+    _vg_weights = vg.get_weights();
 
     _scene->clear_vg_lines();
     _scene->add_vg_lines(vg.get_lines());
     _scene->add_vg_pathes(vg.get_pathes());
 }
 
-void MainWindow::_show_weight(const QVector<Poly>& graph, const QVector<double>& weight, const QMap<int, double>& map)
+void MainWindow::_show_wp_weight(const QVector<Poly>& graph, const QVector<double>& weight, const QMap<int, double>& map)
 {
     _scene->clear_texts();
 
@@ -367,11 +372,11 @@ void MainWindow::_show_weight(const QVector<Poly>& graph, const QVector<double>&
     }
 }
 
-void MainWindow::_show_weight(int index)
+void MainWindow::_show_wp_weight(int index)
 {
     if(index <= 0)
     {
-        _show_weight(QVector<Poly>(), QVector<double>(), QMap<int, double>());
+        _show_wp_weight(QVector<Poly>(), QVector<double>(), QMap<int, double>());
         return;
     }
 
@@ -391,7 +396,7 @@ void MainWindow::_show_weight(int index)
             const MinPoly& min_poly = _result.min_polies[i];
             map[min_poly.idx] = min_poly.total_weight;
         }
-        _show_weight(_result.graph, _result.total_weight, map);
+        _show_wp_weight(_result.graph, _result.total_weight, map);
     }
     else
     {
@@ -401,8 +406,37 @@ void MainWindow::_show_weight(int index)
             const MinPoly& min_poly = _result.min_polies[i];
             map[min_poly.idx] = min_poly.weights[source_idx];
         }
-        _show_weight(_result.graph, _result.weights[source_idx], map);
+        _show_wp_weight(_result.graph, _result.weights[source_idx], map);
     }
+}
+
+void MainWindow::_show_vg_weight(const QVector<QPointF>& points, const QVector<double>& weight)
+{
+    _scene->clear_texts();
+
+    if(weight.empty())
+    {
+        return;
+    }
+
+    int size = std::min(points.size(), weight.size());
+    for(int i = 0; i < size; ++i)
+    {
+        _scene->add_text(points[i], QString::number(weight[i]));
+    }
+}
+
+void MainWindow::_show_vg_weight(int index)
+{
+    if(index <= 0)
+    {
+        _show_vg_weight(QVector<QPointF>(), QVector<double>());
+        return;
+    }
+
+    int source_idx  = index - 1;
+
+    _show_vg_weight(_vg_points, _vg_weights[source_idx]);
 }
 
 void MainWindow::_decompose()
@@ -428,7 +462,9 @@ void MainWindow::_decompose()
     targets.push_back(graph[graph.size() - 1].center);
 
     VisibilityGraph vg;
-    vg.create( sources, get_input_manager().get_obstacles(), targets);
+    vg.create( sources, get_input_manager().get_obstacles(), targets );
+    _vg_points  = vg.get_points();
+    _vg_weights = vg.get_weights();
 
     _scene->clear_vg_lines();
     _scene->add_vg_lines(vg.get_lines());

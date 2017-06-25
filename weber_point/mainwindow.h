@@ -31,7 +31,8 @@ private slots:
     void _cdt();
     void _fermat_point();
     void _wave_propagation();
-    void _show_weight(int index);
+    void _show_wp_weight(int index);
+    void _show_vg_weight(int index);
     void _decompose();
     void _change_font_size(int i);
     void _zoom_in();
@@ -43,7 +44,8 @@ private:
     void _create_actions();
     void _create_menus();
     void _connect_panel();
-    void _show_weight(const QVector<Poly>& graph, const QVector<double>& weight, const QMap<int, double> &map);
+    void _show_wp_weight(const QVector<Poly>& graph, const QVector<double>& weight, const QMap<int, double> &map);
+    void _show_vg_weight(const QVector<QPointF>& points, const QVector<double>& weight);
     void _draw_poly(const Poly& p, const QPen &pen);
 
     struct MinPoly {
@@ -80,6 +82,8 @@ private:
     double          _best;
     double          _second_best;
     bool            _finish;
+    QVector<QPointF> _vg_points;
+    QVector<QVector<double>> _vg_weights;
 };
 
 #endif // MAINWINDOW_H

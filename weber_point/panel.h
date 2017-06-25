@@ -30,7 +30,8 @@ public:
 
 signals:
     void mode_changed(MODE m) const;
-    void activated(int index) const;
+    void wp_activated(int index) const;
+    void vg_activated(int index) const;
 
 public slots:
 private slots:
@@ -49,7 +50,8 @@ private:
     QPushButton* _fermat_point;
     QPushButton* _wave_propagate;
     QPushButton* _decompose;
-    QComboBox*   _box;
+    QComboBox*   _wp_box;
+    QComboBox*   _vg_box;
     QComboBox*   _difference;
     QLineEdit*   _old_value;
     QLineEdit*   _new_value;

@@ -75,7 +75,7 @@ void VisibilityGraph::_dijkstra(const QVector<QVector<double> >& w, int source, 
     }
 }
 
-void VisibilityGraph::create( const QVector<QPointF>& sources, const QVector<QPolygonF>& obs, const QVector<QPointF>& targets)
+void VisibilityGraph::create( const QVector<QPointF>& sources, const QVector<QPolygonF>& obs, const QVector<QPointF>& targets )
 {
     QVector<QPointF> points = sources;
     int label = 0;
@@ -138,11 +138,14 @@ void VisibilityGraph::create( const QVector<QPointF>& sources, const QVector<QPo
         _lines.push_back(l);
     }
 
+    _points = points;
+    _weights.clear();
     for(int i = 0; i < sources.size(); ++i)
     {
         QVector<double> d;
         QVector<int> parent;
         _dijkstra( w, i, d, parent);
+        _weights.push_back(d);
         for(int j = 1; j <= targets.size(); ++j)
         {
             int t = w.size() - j;
@@ -155,4 +158,15 @@ void VisibilityGraph::create( const QVector<QPointF>& sources, const QVector<QPo
             }
         }
     }
+    QVector<double> total;
+    for(int i = 0; i < points.size(); ++i)
+    {
+        double t = 0.0;
+        for(int j = 0; j < sources.size(); ++j)
+        {
+            t += _weights[j][i];
+        }
+        total.push_back(t);
+    }
+    _weights.push_back(total);
 }
