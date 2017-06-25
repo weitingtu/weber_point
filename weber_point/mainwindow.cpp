@@ -85,7 +85,7 @@ void MainWindow::_create_actions()
     _wave_propagate_act = new QAction(tr("&Wave Propagate"), this);
     connect(_wave_propagate_act, SIGNAL(triggered(bool)), this, SLOT(_wave_propagation()));
     _decompose_act      = new QAction(tr("&Decompose"), this);
-    connect(_decompose_act, SIGNAL(triggered(bool)), this, SLOT(_decompose()));
+    connect(_decompose_act, SIGNAL(triggered(bool)), this, SLOT(_decompose_vg()));
 
     _zoom_in_act      = new QAction(tr("Zoom in"), this);
     _zoom_in_act->setShortcut(tr("Z"));
@@ -340,6 +340,7 @@ void MainWindow::_wave_propagation()
     vg.create( sources, get_input_manager().get_obstacles(), targets );
     _vg_points  = vg.get_points();
     _vg_weights = vg.get_weights();
+    _best = _vg_weights.last().last();
 
     _scene->clear_vg_lines();
 //    _scene->add_vg_lines(vg.get_lines());
@@ -436,6 +437,107 @@ void MainWindow::_show_vg_weight(int index)
     _show_vg_weight(_vg_points, _vg_weights[source_idx]);
 }
 
+void MainWindow::_decompose_vg()
+{
+    if(_finish)
+    {
+        printf("finish\n");
+        return;
+    }
+
+    int prev_idx = _result.min_polies.last().idx;
+    if(-1 == prev_idx)
+    {
+        printf("return\n");
+        return;
+    }
+
+    QVector<Poly> graph = _result.graph;
+    Decomposition::decompose( graph, prev_idx );
+
+    QVector<QPointF> sources = get_cdt_manager().get_sources();
+    QVector<QPointF> targets;
+    targets.push_back(graph[graph.size() - 3].center);
+    targets.push_back(graph[graph.size() - 2].center);
+    targets.push_back(graph[graph.size() - 1].center);
+
+    VisibilityGraph vg;
+    vg.create( sources, get_input_manager().get_obstacles(), targets );
+    _vg_points  = vg.get_points();
+    _vg_weights = vg.get_weights();
+
+    _scene->clear_vg_lines();
+//    _scene->add_vg_lines(vg.get_lines());
+    _scene->add_vg_pathes(vg.get_pathes());
+
+    double threshold  = _panel->get_difference_button()->currentData().toDouble();
+    double old_weight = _best;
+
+    int idx = _vg_points.size() - 3;
+    double new_weight = _vg_weights.last()[idx];
+    if(_vg_weights.last()[idx + 1] < new_weight)
+    {
+        new_weight = _vg_weights.last()[idx + 1];
+        idx = idx + 1;
+    }
+    if(_vg_weights.last()[idx + 1] < new_weight)
+    {
+        new_weight = _vg_weights.last()[idx + 1];
+        idx = idx + 1;
+    }
+
+    if(new_weight >= old_weight)
+    {
+        _finish = true;
+        _second_best = std::min(new_weight, _second_best);
+        _best = old_weight;
+        _panel->set_value(_second_best, _best);
+    }
+    else if(old_weight - new_weight < threshold * old_weight)
+    {
+        _finish = true;
+        _second_best = old_weight;
+        _best = new_weight;
+        _panel->set_value(_second_best, _best);
+    }
+    else
+    {
+        _second_best = old_weight;
+        _best = new_weight;
+        _panel->set_value(_second_best, _best);
+    }
+
+    _result.graph = graph;
+    _result.min_polies.push_back(MinPoly());
+    _result.min_polies.last().idx = idx;
+
+    for(int i = graph.size() - 3; i < graph.size(); ++i)
+    {
+        if(i == idx)
+        {
+            continue;
+        }
+        _draw_poly(graph[i], QPen(Qt::darkRed));
+    }
+
+    if(_finish)
+    {
+        _draw_poly(graph[idx], QPen(QColor(Qt::darkRed)));
+        _draw_poly(graph[prev_idx], QPen(QColor(Qt::red)));
+    }
+    else
+    {
+        _draw_poly(graph[idx], QPen(QColor(Qt::red)));
+    }
+
+    if(_finish)
+    {
+        QString msg = QString("Best approximation %1\n2nd best approximation %2, finished").
+                arg(QString::number(_best)).arg(QString::number(_second_best));
+        QMessageBox::information(this, QString(), msg);
+    }
+}
+
 void MainWindow::_decompose()
 {
     if(_finish)
@@ -483,7 +585,7 @@ void MainWindow::_decompose()
     if(idx == prev_idx)
     {
         _finish = true;
-        new_weight = std::min(std::min(wp.get_total_weight()[graph.size() - 3], wp.get_total_weight()[graph.size() - 2]), wp.get_total_weight()[graph.size() - 2]);
+        new_weight = std::min(std::min(wp.get_total_weight()[graph.size() - 3], wp.get_total_weight()[graph.size() - 2]), wp.get_total_weight()[graph.size() - 1]);
         if(_best == std::numeric_limits<double>::max())
         {
             _second_best = old_weight;

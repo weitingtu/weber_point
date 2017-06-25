@@ -33,6 +33,7 @@ private slots:
     void _wave_propagation();
     void _show_wp_weight(int index);
     void _show_vg_weight(int index);
+    void _decompose_vg();
     void _decompose();
     void _change_font_size(int i);
     void _zoom_in();
