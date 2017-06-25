@@ -85,6 +85,10 @@ private:
     bool            _finish;
     QVector<QPointF> _vg_points;
     QVector<QVector<double>> _vg_weights;
+    QVector<QPointF>         _vg_prev_target_points;
+    QVector<QVector<double>> _vg_prev_target_weights;
+    QVector<QPointF>         _vg_target_points;
+    QVector<QVector<double>> _vg_target_weights;
 };
 
 #endif // MAINWINDOW_H

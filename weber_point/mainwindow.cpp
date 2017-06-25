@@ -40,7 +40,11 @@ MainWindow::MainWindow(QWidget *parent)
     _second_best(std::numeric_limits<double>::max()),
     _finish(false),
     _vg_points(),
-    _vg_weights()
+    _vg_weights(),
+    _vg_prev_target_points(),
+    _vg_prev_target_weights(),
+    _vg_target_points(),
+    _vg_target_weights()
 {
     connect(_panel, SIGNAL(mode_changed(MODE)), _scene, SLOT(set_mode(MODE)));
     setCentralWidget(_view);
@@ -124,7 +128,7 @@ void MainWindow::_connect_panel()
     connect(_panel->get_cdt_button(), SIGNAL(clicked(bool)), this, SLOT(_cdt()));
     connect(_panel->get_fermat_point_button(), SIGNAL(clicked(bool)), this, SLOT(_fermat_point()));
     connect(_panel->get_wave_propagate_button(), SIGNAL(clicked(bool)), this, SLOT(_wave_propagation()));
-    connect(_panel->get_decompose_button(), SIGNAL(clicked(bool)), this, SLOT(_decompose()));
+    connect(_panel->get_decompose_button(), SIGNAL(clicked(bool)), this, SLOT(_decompose_vg()));
     connect(_panel, SIGNAL(wp_activated(int)), this, SLOT(_show_wp_weight(int)));
     connect(_panel, SIGNAL(vg_activated(int)), this, SLOT(_show_vg_weight(int)));
 }
@@ -135,6 +139,14 @@ void MainWindow::_clear()
     _best = std::numeric_limits<double>::max();
     _second_best = std::numeric_limits<double>::max();
     _result.clear();
+
+    _vg_points.clear();
+    _vg_weights.clear();
+    _vg_prev_target_points.clear();
+    _vg_prev_target_weights.clear();
+    _vg_target_points.clear();
+    _vg_target_weights.clear();
+
     _scene->clear_all();
     _panel->clear();
     get_input_manager().clear();
@@ -341,6 +353,14 @@ void MainWindow::_wave_propagation()
     _vg_points  = vg.get_points();
     _vg_weights = vg.get_weights();
     _best = _vg_weights.last().last();
+    _vg_prev_target_points.push_back(_vg_points.last());
+    {
+        _vg_prev_target_weights.resize(_vg_weights.size());
+        for(int i = 0; i < _vg_weights.size(); ++i)
+        {
+            _vg_prev_target_weights[i].push_back(_vg_weights[i].last());
+        }
+    }
 
     _scene->clear_vg_lines();
 //    _scene->add_vg_lines(vg.get_lines());
@@ -410,7 +430,7 @@ void MainWindow::_show_wp_weight(int index)
 
 void MainWindow::_show_vg_weight(const QVector<QPointF>& points, const QVector<double>& weight)
 {
-    _scene->clear_texts();
+//    _scene->clear_texts();
 
     if(weight.empty())
     {
@@ -426,6 +446,7 @@ void MainWindow::_show_vg_weight(const QVector<QPointF>& points, const QVector<d
 
 void MainWindow::_show_vg_weight(int index)
 {
+    _scene->clear_texts();
     if(index <= 0)
     {
         _show_vg_weight(QVector<QPointF>(), QVector<double>());
@@ -435,20 +456,22 @@ void MainWindow::_show_vg_weight(int index)
     int source_idx  = index - 1;
 
     _show_vg_weight(_vg_points, _vg_weights[source_idx]);
+    if(!_vg_target_points.empty())
+    {
+        _show_vg_weight(_vg_target_points, _vg_target_weights[source_idx]);
+    }
 }
 
 void MainWindow::_decompose_vg()
 {
     if(_finish)
     {
-        printf("finish\n");
         return;
     }
 
     int prev_idx = _result.min_polies.last().idx;
     if(-1 == prev_idx)
     {
-        printf("return\n");
         return;
     }
 
@@ -466,6 +489,33 @@ void MainWindow::_decompose_vg()
     _vg_points  = vg.get_points();
     _vg_weights = vg.get_weights();
 
+    _vg_target_points  = _vg_prev_target_points;
+    _vg_target_weights = _vg_prev_target_weights;
+    _vg_prev_target_points.clear();
+    _vg_prev_target_weights.clear();
+    _vg_prev_target_weights.resize(_vg_weights.size());
+
+    {
+        int idx = _vg_points.size() - 3;
+        _vg_prev_target_points.push_back(_vg_points[idx]);
+        for(int i = 0; i < _vg_weights.size(); ++i)
+        {
+            _vg_prev_target_weights[i].push_back(_vg_weights[i][idx]);
+        }
+        ++idx;
+        _vg_prev_target_points.push_back(_vg_points[idx]);
+        for(int i = 0; i < _vg_weights.size(); ++i)
+        {
+            _vg_prev_target_weights[i].push_back(_vg_weights[i][idx]);
+        }
+        ++idx;
+        _vg_prev_target_points.push_back(_vg_points[idx]);
+        for(int i = 0; i < _vg_weights.size(); ++i)
+        {
+            _vg_prev_target_weights[i].push_back(_vg_weights[i][idx]);
+        }
+    }
+
     _scene->clear_vg_lines();
 //    _scene->add_vg_lines(vg.get_lines());
     _scene->add_vg_pathes(vg.get_pathes());
@@ -474,16 +524,19 @@ void MainWindow::_decompose_vg()
     double old_weight = _best;
 
     int idx = _vg_points.size() - 3;
+    int g_idx = graph.size() - 3;
     double new_weight = _vg_weights.last()[idx];
     if(_vg_weights.last()[idx + 1] < new_weight)
     {
         new_weight = _vg_weights.last()[idx + 1];
         idx = idx + 1;
+        ++g_idx;
     }
     if(_vg_weights.last()[idx + 1] < new_weight)
     {
         new_weight = _vg_weights.last()[idx + 1];
         idx = idx + 1;
+        ++g_idx;
     }
 
     if(new_weight >= old_weight)
@@ -509,11 +562,11 @@ void MainWindow::_decompose_vg()
 
     _result.graph = graph;
     _result.min_polies.push_back(MinPoly());
-    _result.min_polies.last().idx = idx;
+    _result.min_polies.last().idx = g_idx;
 
     for(int i = graph.size() - 3; i < graph.size(); ++i)
     {
-        if(i == idx)
+        if(i == g_idx)
         {
             continue;
         }
@@ -522,12 +575,12 @@ void MainWindow::_decompose_vg()
 
     if(_finish)
     {
-        _draw_poly(graph[idx], QPen(QColor(Qt::darkRed)));
+        _draw_poly(graph[g_idx], QPen(QColor(Qt::darkRed)));
         _draw_poly(graph[prev_idx], QPen(QColor(Qt::red)));
     }
     else
     {
-        _draw_poly(graph[idx], QPen(QColor(Qt::red)));
+        _draw_poly(graph[g_idx], QPen(QColor(Qt::red)));
     }
 
     if(_finish)
