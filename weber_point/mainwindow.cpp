@@ -251,7 +251,6 @@ void MainWindow::_fermat_point()
                 continue;
             }
             set.insert(pair);
-//            _scene->addLine(QLineF(graph[idx1].center, graph[idx2].center), QPen(QColor(Qt::green)));
             _scene->add_fermat_line(QLineF(graph[idx1].center, graph[idx2].center));
         }
     }
@@ -268,7 +267,6 @@ void MainWindow::_fermat_point()
                 continue;
             }
             int idx = p.neighbors[j];
-//            _scene->addLine(QLineF(p.center, graph[idx].center), QPen(QColor(Qt::green)));
             _scene->add_fermat_line(QLineF(p.center, graph[idx].center));
         }
     }
@@ -277,7 +275,6 @@ void MainWindow::_fermat_point()
     {
         const QPointF& p = graph[i].center;
         const double rad = 1;
-//        _scene->addEllipse(p.x() - rad, p.y() - rad, rad * 2, rad * 2);
         _scene->add_fermat_point(p.x(), p.y(), rad);
     }
 
@@ -345,7 +342,7 @@ void MainWindow::_wave_propagation()
     _vg_weights = vg.get_weights();
 
     _scene->clear_vg_lines();
-    _scene->add_vg_lines(vg.get_lines());
+//    _scene->add_vg_lines(vg.get_lines());
     _scene->add_vg_pathes(vg.get_pathes());
 }
 
@@ -467,7 +464,7 @@ void MainWindow::_decompose()
     _vg_weights = vg.get_weights();
 
     _scene->clear_vg_lines();
-    _scene->add_vg_lines(vg.get_lines());
+//    _scene->add_vg_lines(vg.get_lines());
     _scene->add_vg_pathes(vg.get_pathes());
 
 
