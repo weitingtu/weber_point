@@ -89,6 +89,8 @@ private:
     QVector<QVector<double>> _vg_prev_target_weights;
     QVector<QPointF>         _vg_target_points;
     QVector<QVector<double>> _vg_target_weights;
+    int _dec_secs;
+    int _total_secs;
 };
 
 #endif // MAINWINDOW_H

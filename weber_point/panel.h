@@ -3,6 +3,7 @@
 
 #include "enum.h"
 #include <QWidget>
+#include <QLabel>
 
 class QGroupBox;
 class QSpinBox;
@@ -28,6 +29,13 @@ public:
     void set_source_number(int s);
     void clear();
 
+    void set_hex_secs(int s) const { _hex_secs->setText(QString::number(s) + " ms"); }
+    void set_cdt_secs(int s) const { _cdt_secs->setText(QString::number(s) + " ms"); }
+    void set_fer_secs(int s) const { _fer_secs->setText(QString::number(s) + " ms"); }
+    void set_wp_secs(int s) const  { _wp_secs->setText(QString::number(s) + " ms"); }
+    void set_dec_secs(int s) const { _dec_secs->setText(QString::number(s) + " ms"); }
+    void set_total_secs(int s) const { _total_secs->setText(QString::number(s) + " ms"); }
+
 signals:
     void mode_changed(MODE m) const;
     void wp_activated(int index) const;
@@ -41,6 +49,8 @@ private slots:
     void _create_obs_poly(bool checked) const;
 
 private:
+    void _clear_weight();
+
     QGroupBox* _createSourceObstacleGroup();
 
     QSpinBox*    _font_size;
@@ -55,6 +65,12 @@ private:
     QComboBox*   _difference;
     QLineEdit*   _old_value;
     QLineEdit*   _new_value;
+    QLabel*      _hex_secs;
+    QLabel*      _cdt_secs;
+    QLabel*      _fer_secs;
+    QLabel*      _wp_secs;
+    QLabel*      _dec_secs;
+    QLabel*      _total_secs;
 };
 
 #endif // PANEL_H

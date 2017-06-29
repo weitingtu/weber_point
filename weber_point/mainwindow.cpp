@@ -17,6 +17,7 @@
 #include <QSet>
 #include <QMessageBox>
 #include <QComboBox>
+#include <QTime>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -44,7 +45,9 @@ MainWindow::MainWindow(QWidget *parent)
     _vg_prev_target_points(),
     _vg_prev_target_weights(),
     _vg_target_points(),
-    _vg_target_weights()
+    _vg_target_weights(),
+    _dec_secs(0),
+    _total_secs(0)
 {
     connect(_panel, SIGNAL(mode_changed(MODE)), _scene, SLOT(set_mode(MODE)));
     setCentralWidget(_view);
@@ -147,6 +150,9 @@ void MainWindow::_clear()
     _vg_target_points.clear();
     _vg_target_weights.clear();
 
+    _dec_secs = 0;
+    _total_secs = 0;
+
     _scene->clear_all();
     _panel->clear();
     get_input_manager().clear();
@@ -171,6 +177,9 @@ void MainWindow::_hexagonal()
     {
         return;
     }
+
+    QTime timer;
+    timer.start();
 
     const static double a = 100;
 //    double a = _get_hex(get_input_manager().get_total_area(), get_input_manager().get_source_area());
@@ -217,6 +226,10 @@ void MainWindow::_hexagonal()
         }
         get_cdt_manager().add_hexagonals(points);
     }
+    int ms = timer.elapsed();
+    _total_secs += ms;
+    _panel->set_hex_secs(ms);
+    _panel->set_total_secs(_total_secs);
 }
 
 void MainWindow::_cdt()
@@ -225,7 +238,13 @@ void MainWindow::_cdt()
     {
         return;
     }
+    QTime timer;
+    timer.start();
     get_cdt_manager().cdt();
+    int ms = timer.elapsed();
+    _total_secs += ms;
+    _panel->set_cdt_secs(ms);
+    _panel->set_total_secs(_total_secs);
 
     const QVector<QLineF>& lines = get_cdt_manager().get_lines();
     _scene->add_cdt_lines(lines);
@@ -237,7 +256,13 @@ void MainWindow::_fermat_point()
     {
         return;
     }
+    QTime timer;
+    timer.start();
     get_cdt_manager().fermat_point();
+    int ms = timer.elapsed();
+    _total_secs += ms;
+    _panel->set_fer_secs(ms);
+    _panel->set_total_secs(_total_secs);
 
     const QVector<Poly>& graph = get_cdt_manager().get_graph();
 
@@ -315,6 +340,8 @@ void MainWindow::_wave_propagation()
     _result.clear();
     _panel->set_source_number(get_cdt_manager().get_source_graph().size());
 
+    QTime timer;
+    timer.start();
     WavePropagation wp;
     wp.propagate(get_cdt_manager().get_graph(), get_cdt_manager().get_source_graph());
 
@@ -350,6 +377,11 @@ void MainWindow::_wave_propagation()
 
     VisibilityGraph vg;
     vg.create( sources, get_input_manager().get_obstacles(), targets );
+    int ms = timer.elapsed();
+    _total_secs += ms;
+    _panel->set_wp_secs(ms);
+    _panel->set_total_secs(_total_secs);
+
     _vg_points  = vg.get_points();
     _vg_weights = vg.get_weights();
     _best = _vg_weights.last().last();
@@ -476,6 +508,8 @@ void MainWindow::_decompose_vg()
     }
 
     QVector<Poly> graph = _result.graph;
+    QTime timer;
+    timer.start();
     Decomposition::decompose( graph, prev_idx );
 
     QVector<QPointF> sources = get_cdt_manager().get_sources();
@@ -486,6 +520,12 @@ void MainWindow::_decompose_vg()
 
     VisibilityGraph vg;
     vg.create( sources, get_input_manager().get_obstacles(), targets );
+    int ms = timer.elapsed();
+    _dec_secs += ms;
+    _total_secs += ms;
+    _panel->set_dec_secs(_dec_secs);
+    _panel->set_total_secs(_total_secs);
+
     _vg_points  = vg.get_points();
     _vg_weights = vg.get_weights();
 
