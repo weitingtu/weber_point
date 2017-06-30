@@ -72,7 +72,7 @@ void Scene::add_vg_pathes(const QVector<QLineF>& lines)
 {
     for(const QLineF& l : lines)
     {
-        _vg_lines.push_back(addLine(l, QPen(QColor(Qt::red))));
+        _vg_lines.push_back(addLine(l, QPen(QColor(Qt::magenta))));
     }
 }
 
