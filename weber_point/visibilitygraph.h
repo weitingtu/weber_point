@@ -17,6 +17,8 @@ public:
         {}
 
     void create(const QVector<QPointF>& sources, const QVector<QPolygonF>& obs, const QVector<QPointF>& target);
+//    void create2(const QVector<QPointF>& sources,
+//                 const QVector<QPolygonF> &source_polies, const QVector<QPolygonF>& obs, const QVector<QPointF>& target);
     const QVector<QPointF>& get_points() const { return _points; }
     const QVector<QVector<double>> get_weights() const { return _weights; }
     const QVector<QLineF>& get_lines() const { return _lines; }

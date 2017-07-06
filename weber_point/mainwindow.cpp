@@ -376,7 +376,7 @@ void MainWindow::_wave_propagation()
     targets.push_back(_result.graph[idx].center);
 
     VisibilityGraph vg;
-    vg.create( sources, get_input_manager().get_obstacles(), targets );
+    vg.create( sources, get_input_manager().get_sources() + get_input_manager().get_obstacles(), targets );
     int ms = timer.elapsed();
     _total_secs += ms;
     _panel->set_wp_secs(ms);
@@ -519,7 +519,7 @@ void MainWindow::_decompose_vg()
     targets.push_back(graph[graph.size() - 1].center);
 
     VisibilityGraph vg;
-    vg.create( sources, get_input_manager().get_obstacles(), targets );
+    vg.create( sources, get_input_manager().get_sources() + get_input_manager().get_obstacles(), targets );
     int ms = timer.elapsed();
     _dec_secs += ms;
     _total_secs += ms;
@@ -654,7 +654,7 @@ void MainWindow::_decompose()
     targets.push_back(graph[graph.size() - 1].center);
 
     VisibilityGraph vg;
-    vg.create( sources, get_input_manager().get_obstacles(), targets );
+    vg.create( sources, get_input_manager().get_sources() + get_input_manager().get_obstacles(), targets );
     _vg_points  = vg.get_points();
     _vg_weights = vg.get_weights();
 
