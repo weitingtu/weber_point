@@ -132,7 +132,7 @@ void MainWindow::_connect_panel()
     connect(_panel->get_fermat_point_button(), SIGNAL(clicked(bool)), this, SLOT(_fermat_point()));
     connect(_panel->get_wave_propagate_button(), SIGNAL(clicked(bool)), this, SLOT(_wave_propagation()));
     connect(_panel->get_decompose_button(), SIGNAL(clicked(bool)), this, SLOT(_decompose_vg()));
-//    connect(_panel, SIGNAL(wp_activated(int)), this, SLOT(_show_wp_weight(int)));
+    connect(_panel, SIGNAL(wp_activated(int)), this, SLOT(_show_wp_weight(int)));
     connect(_panel, SIGNAL(vg_activated(int)), this, SLOT(_show_vg_weight(int)));
 }
 

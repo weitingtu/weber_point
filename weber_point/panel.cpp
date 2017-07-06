@@ -15,7 +15,7 @@ Panel::Panel(QWidget *parent) : QWidget(parent),
     _fermat_point(new QPushButton(tr("Center of &Gravity"), this)),
     _wave_propagate(new QPushButton(tr("&Wave Propagate"), this)),
     _decompose(new QPushButton(tr("&Decompose"), this)),
-//    _wp_box(new QComboBox(this)),
+    _wp_box(new QComboBox(this)),
     _vg_box(new QComboBox(this)),
     _difference(new QComboBox(this)),
     _old_value(new QLineEdit(this)),
@@ -29,7 +29,7 @@ Panel::Panel(QWidget *parent) : QWidget(parent),
 {
     _font_size->setValue(9);
 
-//    connect(_wp_box, SIGNAL(activated(int)), this, SIGNAL(wp_activated(int)));
+    connect(_wp_box, SIGNAL(activated(int)), this, SIGNAL(wp_activated(int)));
     connect(_vg_box, SIGNAL(activated(int)), this, SIGNAL(vg_activated(int)));
 
     _difference->addItem("1%",      0.01);
@@ -55,7 +55,7 @@ Panel::Panel(QWidget *parent) : QWidget(parent),
     vbox->addWidget(_decompose);
     vbox->addWidget(_dec_secs);
     vbox->addWidget(_total_secs);
-//    vbox->addWidget(_wp_box);
+    vbox->addWidget(_wp_box);
     vbox->addWidget(_vg_box);
     vbox->addWidget(_difference);
     vbox->addWidget(_old_value);
@@ -104,12 +104,12 @@ void Panel::set_source_number(int s)
     _clear_weight();
     for(int i = 0; i < s; ++i)
     {
-//        _wp_box->addItem(QString("Source %1").arg(QString::number(i)));
+        _wp_box->addItem(QString("Source %1").arg(QString::number(i)));
         _vg_box->addItem(QString("Source %1").arg(QString::number(i)));
     }
     if(s > 0)
     {
-//        _wp_box->addItem("Total");
+        _wp_box->addItem("Total");
         _vg_box->addItem("Total");
     }
 }
@@ -127,8 +127,8 @@ void Panel::clear()
 
 void Panel::_clear_weight()
 {
-//    _wp_box->clear();
-//    _wp_box->addItem("None");
+    _wp_box->clear();
+    _wp_box->addItem("None");
     _vg_box->clear();
     _vg_box->addItem("None");
     _old_value->clear();
