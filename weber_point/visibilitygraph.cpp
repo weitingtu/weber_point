@@ -176,5 +176,9 @@ void VisibilityGraph::create( const QVector<QPointF>& sources, const QVector<QPo
         }
         total.push_back(t);
     }
+    for(int i = 0; i < sources.size(); ++i)
+    {
+        total[i] = 0;
+    }
     _weights.push_back(total);
 }
