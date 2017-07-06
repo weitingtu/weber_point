@@ -227,26 +227,40 @@ bool _is_valid(const QPolygonF& p)
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if( _accept_input && (( MODE::CREATE_SOURCE_RECT == _mode ) || ( MODE::CREATE_OBS_RECT == _mode ))
-            && ( mouseEvent->button()==Qt::LeftButton ) && (sceneRect().contains(mouseEvent->scenePos())) )
+            && ( mouseEvent->button()==Qt::LeftButton )
+            && (sceneRect().contains(mouseEvent->scenePos()))
+            )
     {
+        if(get_input_manager().is_blocked(mouseEvent->scenePos()))
+        {
+            _points.clear();
+            QGraphicsScene::mousePressEvent(mouseEvent);
+            return;
+        }
         _points.push_back(mouseEvent->scenePos());
         if( 2 == _points.size() )
         {
             QRectF rect = _create_rectf(_points.front(), _points.back());
-            if( MODE::CREATE_SOURCE_RECT == _mode )
+            if(!get_input_manager().is_blocked(QPolygonF(rect)))
             {
-                addRect(rect, QPen(), QBrush(Qt::gray));
-                get_input_manager().add_source(QPolygonF(rect));
-            }
-            else if( MODE::CREATE_OBS_RECT == _mode )
-            {
-                addRect(rect, QPen(), QBrush(Qt::black));
-                get_input_manager().add_obstacle(QPolygonF(rect));
+                if( MODE::CREATE_SOURCE_RECT == _mode )
+                {
+                    addRect(rect, QPen(), QBrush(Qt::gray));
+                    get_input_manager().add_source(QPolygonF(rect));
+                }
+                else if( MODE::CREATE_OBS_RECT == _mode )
+                {
+                    addRect(rect, QPen(), QBrush(Qt::black));
+                    get_input_manager().add_obstacle(QPolygonF(rect));
+                }
             }
             _points.clear();
         }
     }
-    else if( _accept_input && (( MODE::CREATE_SOURCE_POLY == _mode ) || ( MODE::CREATE_OBS_POLY == _mode )))
+    else if( _accept_input
+             && (( MODE::CREATE_SOURCE_POLY == _mode ) || ( MODE::CREATE_OBS_POLY == _mode ))
+             && !get_input_manager().is_blocked(mouseEvent->scenePos())
+             )
     {
         if(( mouseEvent->button()==Qt::LeftButton ) && (sceneRect().contains(mouseEvent->scenePos())))
         {
@@ -258,7 +272,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             {
                 _points.push_back(_points.front());
                 QPolygonF poly(_points);
-                if( _is_valid(poly) )
+                if( _is_valid(poly) && !get_input_manager().is_blocked(poly) )
                 {
                     if( MODE::CREATE_SOURCE_POLY == _mode )
                     {

@@ -26,6 +26,7 @@ public:
     const QVector<QPolygonF>& get_sources() const { return _sources; }
     const QVector<QPolygonF>& get_obstacles() const { return _obstacles; }
     bool is_blocked(const QPointF& point) const;
+    bool is_blocked(const QPolygonF& poly) const;
     double get_source_area() const;
     double get_total_area() const;
 signals:

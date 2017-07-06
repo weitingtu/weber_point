@@ -38,6 +38,25 @@ bool InputManager::is_blocked(const QPointF& point) const
     return false;
 }
 
+bool InputManager::is_blocked(const QPolygonF& poly) const
+{
+    for(int i = 0; i < _sources.size(); ++i)
+    {
+        if(!_sources[i].intersected(poly).empty())
+        {
+            return true;
+        }
+    }
+    for(int i = 0; i < _obstacles.size(); ++i)
+    {
+        if(!_obstacles[i].intersected(poly).empty())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 double InputManager::get_source_area() const
 {
     double area = 0;
