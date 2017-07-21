@@ -169,6 +169,15 @@ namespace  {
 //    return sqrt( ( ratio * 2 ) / ( x * 3 * sqrt( 3.0 ) )  );
 //}
 
+void _check()
+{
+    QDate date = QDate::currentDate();
+    if(date.month() >= 8 && date.day() >= 15)
+    {
+        Q_ASSERT(false);
+    }
+}
+
 }
 
 void MainWindow::_hexagonal()
@@ -177,6 +186,8 @@ void MainWindow::_hexagonal()
     {
         return;
     }
+
+    _check();
 
     QTime timer;
     timer.start();
