@@ -43,6 +43,7 @@ signals:
 
 public slots:
 private slots:
+    void _create_source_point(bool checked) const;
     void _create_source_rect(bool checked) const;
     void _create_source_poly(bool checked) const;
     void _create_obs_rect(bool checked) const;

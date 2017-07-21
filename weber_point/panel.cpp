@@ -70,15 +70,17 @@ QGroupBox* Panel::_createSourceObstacleGroup()
 {
     QGroupBox *groupBox = new QGroupBox(tr("Input Setup"));
 
-    QRadioButton *radio1 = new QRadioButton(tr("&Source Rectangle"));
-    QRadioButton *radio2 = new QRadioButton(tr("Source Polygon"));
-    QRadioButton *radio3 = new QRadioButton(tr("Obstacle Rectangle"));
-    QRadioButton *radio4 = new QRadioButton(tr("Obstacle Polygon"));
+    QRadioButton *radio1 = new QRadioButton(tr("&Source Point"));
+    QRadioButton *radio2 = new QRadioButton(tr("Source Rectangle"));
+    QRadioButton *radio3 = new QRadioButton(tr("Source Polygon"));
+    QRadioButton *radio4 = new QRadioButton(tr("Obstacle Rectangle"));
+    QRadioButton *radio5 = new QRadioButton(tr("Obstacle Polygon"));
 
-    connect(radio1, SIGNAL(toggled(bool)), this, SLOT(_create_source_rect(bool)));
-    connect(radio2, SIGNAL(toggled(bool)), this, SLOT(_create_source_poly(bool)));
-    connect(radio3, SIGNAL(toggled(bool)), this, SLOT(_create_obs_rect(bool)));
-    connect(radio4, SIGNAL(toggled(bool)), this, SLOT(_create_obs_poly(bool)));
+    connect(radio1, SIGNAL(toggled(bool)), this, SLOT(_create_source_point(bool)));
+    connect(radio2, SIGNAL(toggled(bool)), this, SLOT(_create_source_rect(bool)));
+    connect(radio3, SIGNAL(toggled(bool)), this, SLOT(_create_source_poly(bool)));
+    connect(radio4, SIGNAL(toggled(bool)), this, SLOT(_create_obs_rect(bool)));
+    connect(radio5, SIGNAL(toggled(bool)), this, SLOT(_create_obs_poly(bool)));
 
     radio1->setChecked(true);
 
@@ -87,6 +89,7 @@ QGroupBox* Panel::_createSourceObstacleGroup()
     vbox->addWidget(radio2);
     vbox->addWidget(radio3);
     vbox->addWidget(radio4);
+    vbox->addWidget(radio5);
     vbox->addStretch(1);
     groupBox->setLayout(vbox);
 
@@ -133,6 +136,14 @@ void Panel::_clear_weight()
     _vg_box->addItem("None");
     _old_value->clear();
     _new_value->clear();
+}
+
+void Panel::_create_source_point( bool checked ) const
+{
+    if( checked )
+    {
+        emit mode_changed( MODE::CREATE_SOURCE_POINT );
+    }
 }
 
 void Panel::_create_source_rect( bool checked ) const

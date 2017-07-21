@@ -6,7 +6,7 @@
 
 Scene::Scene(QObject *parent ):
     QGraphicsScene(parent),
-    _mode(MODE::CREATE_SOURCE_RECT),
+    _mode(MODE::CREATE_SOURCE_POINT),
     _accept_input(true),
     _points(),
     _texts(),
@@ -226,7 +226,17 @@ bool _is_valid(const QPolygonF& p)
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if( _accept_input && (( MODE::CREATE_SOURCE_RECT == _mode ) || ( MODE::CREATE_OBS_RECT == _mode ))
+    if( _accept_input && ( MODE::CREATE_SOURCE_POINT == _mode )
+        && ( mouseEvent->button()==Qt::LeftButton )
+        && (sceneRect().contains(mouseEvent->scenePos()))
+        && !get_input_manager().is_blocked(mouseEvent->scenePos())
+        )
+    {
+        addEllipse(mouseEvent->scenePos().x() - 1, mouseEvent->scenePos().y() - 1, 1 * 2, 1 * 2);
+        QRectF rect(mouseEvent->scenePos(), QSizeF(0, 0));
+        get_input_manager().add_source(QPolygonF(rect));
+    }
+    else if( _accept_input && (( MODE::CREATE_SOURCE_RECT == _mode ) || ( MODE::CREATE_OBS_RECT == _mode ))
             && ( mouseEvent->button()==Qt::LeftButton )
             && (sceneRect().contains(mouseEvent->scenePos()))
             )

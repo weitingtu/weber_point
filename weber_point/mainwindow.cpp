@@ -414,11 +414,12 @@ void MainWindow::_wave_propagation()
 
     for(int i = 0 ;i < graph_idx.size(); ++i)
     {
-        if(best_graph_idx != graph_idx[i])
+        if(best_graph_idx != graph_idx[i] && idx != graph_idx[i])
         {
             _draw_poly(_result.graph[graph_idx[i]], QPen(QColor(Qt::blue)));
         }
     }
+    _draw_poly(_result.graph[idx], QPen(QColor(Qt::darkRed)));
     _draw_poly(_result.graph[best_graph_idx], QPen(QColor(Qt::red)));
 
     _scene->clear_vg_lines();
