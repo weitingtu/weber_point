@@ -380,7 +380,6 @@ void MainWindow::_wave_propagation()
 
     _scene->clear_hex_points();
     _scene->clear_cdt_lines();
-    _scene->clear_fermat();
 
     QVector<QPointF> sources = get_cdt_manager().get_sources();
     QVector<QPointF> targets;
