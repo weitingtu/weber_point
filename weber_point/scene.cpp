@@ -146,6 +146,24 @@ void Scene::clear_fermat()
     _fermat_lines.clear();
 }
 
+static bool _is_point(const QPolygonF& poly)
+{
+    if(poly.empty())
+    {
+        return false;
+    }
+
+    QPointF p = poly.first();
+    for(int i = 1; i < poly.size(); ++i)
+    {
+        if(p != poly[i])
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 void Scene::initialize()
 {
     double width  = get_input_manager().get_width();
@@ -158,7 +176,15 @@ void Scene::initialize()
     const QVector<QPolygonF>& sources = get_input_manager().get_sources();
     for(int i = 0; i < sources.size(); ++i)
     {
-        addPolygon(sources[i], QPen(), QBrush(Qt::gray));
+        if(_is_point(sources[i]))
+        {
+            QPointF p = sources[i].first();
+            addEllipse(p.x() - 1, p.y() - 1, 1 * 2, 1 * 2);
+        }
+        else
+        {
+            addPolygon(sources[i], QPen(), QBrush(Qt::gray));
+        }
     }
     const QVector<QPolygonF>& obstacles = get_input_manager().get_obstacles();
     for(int i = 0; i < obstacles.size(); ++i)
