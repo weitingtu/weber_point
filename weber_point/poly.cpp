@@ -1,4 +1,5 @@
 #include "poly.h"
+#include <QDebug>
 
 bool Poly::is_neighbor(int idx) const
 {
@@ -18,4 +19,12 @@ void Poly::clear()
     points.clear();
     indices.clear();
     neighbors.clear();
+}
+
+void Poly::print() const
+{
+    qDebug() << center;
+    qDebug() << points;
+    qDebug() << indices;
+    qDebug() << neighbors;
 }

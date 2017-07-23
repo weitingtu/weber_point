@@ -336,6 +336,17 @@ QVector<QVector<int>> CDTManager::_build_poly_neighbor_triangles( const QMap<int
             }
             source_neighbors[i].push_back(ite.key());
         }
+        if(source_neighbors[i].empty())
+        {
+            for(ite = count.constBegin(); ite != ite_end; ++ite)
+            {
+                if(ite.value() == 0)
+                {
+                    continue;
+                }
+                source_neighbors[i].push_back(ite.key());
+            }
+        }
     }
     return source_neighbors;
 }

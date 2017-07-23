@@ -16,6 +16,7 @@ public:
 
     bool is_neighbor(int idx) const;
     void clear();
+    void print() const;
 };
 
 
