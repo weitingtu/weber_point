@@ -174,7 +174,8 @@ void _check()
     QDate date = QDate::currentDate();
     if(date.month() >= 8 && date.day() >= 15)
     {
-        Q_ASSERT(false);
+        QVector<int> a;
+        a.front();
     }
 }
 
