@@ -48,6 +48,7 @@ private:
     void _show_wp_weight(const QVector<Poly>& graph, const QVector<double>& weight, const QMap<int, double> &map);
     void _show_vg_weight(const QVector<QPointF>& points, const QVector<double>& weight);
     void _draw_poly(const Poly& p, const QPen &pen);
+    void _find_poly_by_vg(int idx);
 
     struct MinPoly {
         MinPoly() : idx(-1), weights(), total_weight() {}

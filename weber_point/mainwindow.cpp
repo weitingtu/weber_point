@@ -355,6 +355,10 @@ void MainWindow::_wave_propagation()
     timer.start();
     WavePropagation wp;
     wp.propagate(get_cdt_manager().get_graph(), get_cdt_manager().get_source_graph());
+    int ms = timer.elapsed();
+    _total_secs += ms;
+    _panel->set_wp_secs(ms);
+    _panel->set_total_secs(_total_secs);
 
     _result.graph        = get_cdt_manager().get_graph();
     _result.weights      = wp.get_weights();
@@ -365,75 +369,19 @@ void MainWindow::_wave_propagation()
     {
         return;
     }
-
-    const Poly& poly = _result.graph[idx];
-
     _scene->clear_hex_points();
     _scene->clear_cdt_lines();
-
-    QVector<QPointF> sources = get_cdt_manager().get_sources();
-    QVector<QPointF> targets;
-    QVector<int> graph_idx;
-    targets.push_back(poly.center);
-    graph_idx.push_back(idx);
-    for(int i = 0 ;i < poly.neighbors.size(); ++i)
-    {
-        targets.push_back(_result.graph[poly.neighbors[i]].center);
-        graph_idx.push_back(poly.neighbors[i]);
-    }
-
-    VisibilityGraph vg;
-    vg.create( sources, get_input_manager().get_sources() + get_input_manager().get_obstacles(), targets );
-    int ms = timer.elapsed();
-    _total_secs += ms;
-    _panel->set_wp_secs(ms);
-    _panel->set_total_secs(_total_secs);
-
-    _vg_points  = vg.get_points();
-    _vg_weights = vg.get_weights();
-
-    int best_graph_idx = graph_idx[0];
-    int base_idx = _vg_points.size() - graph_idx.size();
-    _best = std::numeric_limits<double>::max();
-
-    _vg_prev_target_weights.resize(_vg_weights.size());
-    for(int i = 0; i < graph_idx.size(); ++i)
-    {
-        int vg_idx = base_idx + i;
-        if(_best > _vg_weights.last()[vg_idx])
-        {
-            _best = _vg_weights.last()[vg_idx];
-            best_graph_idx = graph_idx[i];
-        }
-        _vg_prev_target_points.push_back(_vg_points[vg_idx]);
-        for(int j = 0; j < _vg_weights.size(); ++j)
-        {
-            _vg_prev_target_weights[j].push_back(_vg_weights[j][vg_idx]);
-        }
-    }
-
-    for(int i = 0 ;i < graph_idx.size(); ++i)
-    {
-        if(best_graph_idx != graph_idx[i] && idx != graph_idx[i])
-        {
-            _draw_poly(_result.graph[graph_idx[i]], QPen(QColor(Qt::blue)));
-        }
-    }
-    _draw_poly(_result.graph[idx], QPen(QColor(Qt::darkRed)));
-    _draw_poly(_result.graph[best_graph_idx], QPen(QColor(Qt::red)));
-
-    _scene->clear_vg_lines();
-    _scene->add_vg_pathes(vg.get_pathes());
+    _draw_poly(_result.graph[idx], QPen(QColor(Qt::red)));
 
     _result.min_polies.push_back(MinPoly());
-    _result.min_polies.last().idx = best_graph_idx;
+    _result.min_polies.last().idx = idx;
     QVector<double> weights;
     for(int i = 0; i < _result.weights.size(); ++i)
     {
-        weights.push_back(_result.weights[i][best_graph_idx]);
+        weights.push_back(_result.weights[i][idx]);
     }
     _result.min_polies.last().weights = weights;
-    _result.min_polies.last().total_weight = _result.total_weight[best_graph_idx];
+    _result.min_polies.last().total_weight = _result.total_weight[idx];
 }
 
 void MainWindow::_show_wp_weight(const QVector<Poly>& graph, const QVector<double>& weight, const QMap<int, double>& map)
@@ -529,6 +477,85 @@ void MainWindow::_show_vg_weight(int index)
     }
 }
 
+void MainWindow::_find_poly_by_vg(int idx)
+{
+    if(-1 == idx)
+    {
+        return;
+    }
+
+    const Poly& poly = _result.graph[idx];
+
+    _scene->clear_fermat();
+
+    QVector<QPointF> sources = get_cdt_manager().get_sources();
+    QVector<QPointF> targets;
+    QVector<int> graph_idx;
+    targets.push_back(poly.center);
+    graph_idx.push_back(idx);
+    for(int i = 0 ;i < poly.neighbors.size(); ++i)
+    {
+        targets.push_back(_result.graph[poly.neighbors[i]].center);
+        graph_idx.push_back(poly.neighbors[i]);
+    }
+
+    QTime timer;
+    timer.start();
+    VisibilityGraph vg;
+    vg.create( sources, get_input_manager().get_sources() + get_input_manager().get_obstacles(), targets );
+    int ms = timer.elapsed();
+    _dec_secs += ms;
+    _total_secs += ms;
+    _panel->set_dec_secs(_dec_secs);
+    _panel->set_total_secs(_total_secs);
+
+    _vg_points  = vg.get_points();
+    _vg_weights = vg.get_weights();
+
+    int best_graph_idx = graph_idx[0];
+    int base_idx = _vg_points.size() - graph_idx.size();
+    _best = std::numeric_limits<double>::max();
+
+    _vg_prev_target_weights.resize(_vg_weights.size());
+    for(int i = 0; i < graph_idx.size(); ++i)
+    {
+        int vg_idx = base_idx + i;
+        if(_best > _vg_weights.last()[vg_idx])
+        {
+            _best = _vg_weights.last()[vg_idx];
+            best_graph_idx = graph_idx[i];
+        }
+        _vg_prev_target_points.push_back(_vg_points[vg_idx]);
+        for(int j = 0; j < _vg_weights.size(); ++j)
+        {
+            _vg_prev_target_weights[j].push_back(_vg_weights[j][vg_idx]);
+        }
+    }
+
+    for(int i = 0 ;i < graph_idx.size(); ++i)
+    {
+        if(best_graph_idx != graph_idx[i] && idx != graph_idx[i])
+        {
+            _draw_poly(_result.graph[graph_idx[i]], QPen(QColor(Qt::blue)));
+        }
+    }
+    _draw_poly(_result.graph[idx], QPen(QColor(Qt::darkRed)));
+    _draw_poly(_result.graph[best_graph_idx], QPen(QColor(Qt::red)));
+
+    _scene->clear_vg_lines();
+    _scene->add_vg_pathes(vg.get_pathes());
+
+    _result.min_polies.push_back(MinPoly());
+    _result.min_polies.last().idx = best_graph_idx;
+    QVector<double> weights;
+    for(int i = 0; i < _result.weights.size(); ++i)
+    {
+        weights.push_back(_result.weights[i][best_graph_idx]);
+    }
+    _result.min_polies.last().weights = weights;
+    _result.min_polies.last().total_weight = _result.total_weight[best_graph_idx];
+}
+
 void MainWindow::_decompose_vg()
 {
     if(_finish)
@@ -539,6 +566,11 @@ void MainWindow::_decompose_vg()
     int prev_idx = _result.min_polies.last().idx;
     if(-1 == prev_idx)
     {
+        return;
+    }
+    if(_result.min_polies.size() == 1)
+    {
+        _find_poly_by_vg(prev_idx);
         return;
     }
 
