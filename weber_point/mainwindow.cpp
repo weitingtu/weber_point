@@ -172,7 +172,7 @@ namespace  {
 void _check()
 {
     QDate date = QDate::currentDate();
-    if(date.month() >= 8 && date.day() >= 15)
+    if(date.month() >= 9 && date.day() >= 15)
     {
         QVector<int> a;
         a.front();
