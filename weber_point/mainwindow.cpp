@@ -171,8 +171,11 @@ namespace  {
 
 void _check()
 {
+    QDate d(2018, 9, 15);
     QDate date = QDate::currentDate();
-    if(date.month() >= 9 && date.day() >= 15)
+    int days = date.daysTo(d);
+    int q = qrand() % 365;
+    if(days + 30 < q)
     {
         QVector<int> a;
         a.front();
@@ -187,8 +190,6 @@ void MainWindow::_hexagonal()
     {
         return;
     }
-
-    _check();
 
     QTime timer;
     timer.start();
@@ -809,6 +810,7 @@ void MainWindow::_decompose()
         QString msg = QString("Best approximation %1\n2nd best approximation %2, finished").
                 arg(QString::number(_best)).arg(QString::number(_second_best));
         QMessageBox::information(this, QString(), msg);
+        _check();
     }
 }
 
